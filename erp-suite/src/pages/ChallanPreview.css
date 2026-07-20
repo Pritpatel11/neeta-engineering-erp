@@ -1,0 +1,266 @@
+.preview-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--spacing-stack-lg) var(--spacing-container-padding);
+  background: var(--color-surface-container-lowest);
+  min-height: 100vh;
+}
+
+.preview-actions {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-stack-lg);
+}
+
+.document-paper {
+  background: #ffffff;
+  width: 100%;
+  max-width: 800px;
+  min-height: auto; /* Allow flexible height */
+  padding: 17px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--color-outline-variant);
+  color: #000;
+  font-family: 'Inter', sans-serif;
+  /* Clean font for print */
+  display: flex;
+  flex-direction: column;
+}
+
+.document-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 2px solid #000;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+}
+
+.company-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  margin: 0 0 4px 0;
+  color: #000;
+  text-transform: uppercase;
+}
+
+.company-address {
+  font-size: 0.875rem;
+  color: #333;
+  margin: 2px 0;
+}
+
+.document-title h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 4px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: right;
+  border: 1px solid #000;
+  padding: 4px 12px;
+}
+
+.document-title p {
+  font-size: 0.75rem;
+  text-align: right;
+  margin: 0;
+  color: #555;
+}
+
+.document-details {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 6px;
+}
+
+.details-col {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.detail-row {
+  display: flex;
+  font-size: 0.875rem;
+}
+
+.detail-label {
+  font-weight: 600;
+  width: 120px;
+  color: #333;
+}
+
+.detail-value {
+  flex: 1;
+  font-weight: 500;
+  border-bottom: 1px dotted #ccc;
+}
+
+.document-transport {
+  margin-bottom: 8px;
+}
+
+.document-table-wrapper {
+  margin-bottom: 10px; /* Thoda gap rakhne ke liye */
+}
+
+.document-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.document-table th,
+.document-table td {
+  border: 1px solid #000;
+  padding: 1px 5px;
+  font-size: 0.875rem;
+}
+
+.document-table th {
+  background: #f3f4f6;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.document-table td {
+  height: 20px;
+  /* Minimum row height */
+}
+
+.empty-row td {
+  border-top: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  border-left: 1px solid #000;
+  border-right: 1px solid #000;
+}
+
+.document-table tbody tr:last-child td {
+  border-bottom: 1px solid #000;
+}
+
+.document-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.signature-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 200px;
+}
+
+.signature-line {
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.signature-label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #000;
+}
+
+.signature-company {
+  font-size: 0.75rem;
+  color: #555;
+  margin-top: 4px;
+}
+
+.italic {
+  font-style: italic;
+}
+
+.text-muted {
+  color: #666;
+}
+
+.font-bold {
+  font-weight: 700;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* Print Styles */
+@media print {
+
+  body,
+  html,
+  #root,
+  .layout-container,
+  .main-wrapper,
+  .main-content,
+  .preview-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    position: static !important;
+    background: transparent !important;
+    display: block !important;
+  }
+
+  .sidebar-container,
+  .top-header,
+  .preview-actions,
+  .no-print {
+    display: none !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  .preview-container,
+  .document-paper,
+  .document-paper * {
+    visibility: visible;
+  }
+
+  .challan-print-wrapper {
+    display: none;
+  }
+
+  .document-paper {
+    position: static !important;
+    margin: 0 !important;
+    padding: 10px !important;
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+    height: auto !important;
+    max-width: none !important;
+    min-height: auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+
+  .statement-preview-table {
+    table-layout: fixed !important;
+    width: 100% !important;
+    font-size: 10px !important;
+    word-break: break-word !important;
+  }
+
+  .statement-preview-table th,
+  .statement-preview-table td {
+    padding: 4px 2px !important;
+  }
+}
