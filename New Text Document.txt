@@ -1,1 +1,0 @@
-node src/utils/restore.js "E:\ERP\backups\erp_backup_2026-06-11.json"
