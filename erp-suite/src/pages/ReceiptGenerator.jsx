@@ -123,34 +123,59 @@ export default function ReceiptGenerator() {
   };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="dashboard-title"><FileText size={28} /> {editReceipt ? 'Edit Receipt' : 'Receipt Generator'}</h1>
-          <p className="dashboard-subtitle">{editReceipt ? 'Modify existing payment receipt.' : 'Create and save new payment receipts.'}</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-3">
+            <FileText size={28} className="text-[#0059bb]" /> {editReceipt ? 'Edit Receipt' : 'Receipt Generator'}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            {editReceipt ? 'Modify existing payment receipt.' : 'Create and save new payment receipts.'}
+          </p>
         </div>
       </header>
 
-      <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto', padding: '30px' }}>
-        <h2 style={{ textAlign: 'center', color: '#1a365d', marginBottom: '30px', borderBottom: '2px solid #e2e8f0', paddingBottom: '15px' }}>
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-xs p-6 sm:p-8 max-w-3xl mx-auto">
+        <h2 className="text-xl sm:text-2xl font-bold text-center text-slate-900 pb-4 mb-6 border-b border-slate-200">
           NEETA ENGINEERING WORKS RECEIPT ENTRY
         </h2>
 
-        <form onSubmit={handleSubmit} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-          <div style={{ gridColumn: '1 / span 2', display: 'flex', gap: '20px' }}>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#4a5568' }}>Receipt No *</label>
-              <input type="text" name="receiptNo" value={formData.receiptNo} onChange={handleChange} className="form-control" style={{ width: '100%', padding: '10px' }} required />
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-slate-700">Receipt No *</label>
+              <input 
+                type="text" 
+                name="receiptNo" 
+                value={formData.receiptNo} 
+                onChange={handleChange} 
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
+                required 
+              />
             </div>
-            <div style={{ flex: 1 }}>
-              <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#4a5568' }}>Date *</label>
-              <input type="text" placeholder="dd/mm/yyyy" name="date" value={formData.date} onChange={handleChange} className="form-control" style={{ width: '100%', padding: '10px' }} required />
+            <div>
+              <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-slate-700">Date *</label>
+              <input 
+                type="text" 
+                placeholder="dd/mm/yyyy" 
+                name="date" 
+                value={formData.date} 
+                onChange={handleChange} 
+                className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
+                required 
+              />
             </div>
           </div>
 
-          <div style={{ gridColumn: '1 / span 2' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#4a5568' }}>Party Name *</label>
-            <select name="partyName" value={formData.partyName} onChange={handleChange} className="form-control" style={{ width: '100%', padding: '10px' }} required>
+          <div className="sm:col-span-2">
+            <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-slate-700">Party Name *</label>
+            <select 
+              name="partyName" 
+              value={formData.partyName} 
+              onChange={handleChange} 
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all cursor-pointer" 
+              required
+            >
               <option value="">-- Select Party Name --</option>
               {parties.map(party => (
                 <option key={party._id} value={party.name}>{party.name}</option>
@@ -158,38 +183,73 @@ export default function ReceiptGenerator() {
             </select>
           </div>
 
-          <div style={{ gridColumn: '1 / span 2' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#4a5568' }}>Amount (In Rs.) *</label>
-            <input type="number" step="0.01" name="amount" value={formData.amount} onChange={handleChange} className="form-control" style={{ width: '100%', padding: '10px', fontSize: '18px', fontWeight: 'bold' }} required />
+          <div className="sm:col-span-2">
+            <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-slate-700">Amount (In Rs.) *</label>
+            <input 
+              type="number" 
+              step="0.01" 
+              name="amount" 
+              value={formData.amount} 
+              onChange={handleChange} 
+              className="w-full px-3.5 py-2.5 text-lg font-bold rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
+              required 
+            />
           </div>
 
-          <div style={{ gridColumn: '1 / span 2', background: '#f7fafc', padding: '15px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#4a5568' }}>Amount In Word</label>
-            <div style={{ color: '#2b6cb0', fontSize: '16px', fontWeight: '500', minHeight: '24px' }}>
+          <div className="sm:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-slate-700">Amount In Word</label>
+            <div className="text-blue-700 text-sm sm:text-base font-semibold min-h-[24px]">
               {amountInWords || 'Enter amount above'}
             </div>
           </div>
 
-          <div style={{ gridColumn: '1 / span 2' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#4a5568' }}>Cheque No</label>
-            <input type="text" name="chequeNo" value={formData.chequeNo} onChange={handleChange} className="form-control" style={{ width: '100%', padding: '10px' }} />
+          <div className="sm:col-span-2">
+            <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-slate-700">Cheque No</label>
+            <input 
+              type="text" 
+              name="chequeNo" 
+              value={formData.chequeNo} 
+              onChange={handleChange} 
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
+            />
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#4a5568' }}>Bill No</label>
-            <input type="text" name="billNo" value={formData.billNo} onChange={handleChange} className="form-control" style={{ width: '100%', padding: '10px' }} />
+            <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-slate-700">Bill No</label>
+            <input 
+              type="text" 
+              name="billNo" 
+              value={formData.billNo} 
+              onChange={handleChange} 
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
+            />
           </div>
 
           <div>
-            <label style={{ display: 'block', marginBottom: '8px', fontWeight: 'bold', color: '#4a5568' }}>Bill Date</label>
-            <input type="text" placeholder="dd/mm/yyyy" name="billDate" value={formData.billDate} onChange={handleChange} className="form-control" style={{ width: '100%', padding: '10px' }} />
+            <label className="block mb-1.5 text-xs sm:text-sm font-semibold text-slate-700">Bill Date</label>
+            <input 
+              type="text" 
+              placeholder="dd/mm/yyyy" 
+              name="billDate" 
+              value={formData.billDate} 
+              onChange={handleChange} 
+              className="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
+            />
           </div>
 
-          <div style={{ gridColumn: '1 / span 2', marginTop: '20px', display: 'flex', justifyContent: 'flex-end', gap: '15px' }}>
-            <button type="button" className="btn-outline" onClick={() => navigate('/receipt-management')}>
+          <div className="sm:col-span-2 flex justify-end gap-3 mt-4">
+            <button 
+              type="button" 
+              className="px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-sm font-medium transition-colors cursor-pointer" 
+              onClick={() => navigate('/receipt-management')}
+            >
               Cancel
             </button>
-            <button type="submit" className="btn-primary" disabled={loading} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <button 
+              type="submit" 
+              className="px-5 py-2.5 rounded-xl bg-[#0059bb] hover:bg-[#004899] text-white text-sm font-medium flex items-center gap-2 transition-colors cursor-pointer shadow-xs disabled:opacity-50" 
+              disabled={loading}
+            >
               <Save size={18} /> {loading ? 'Saving...' : (editReceipt ? 'Update Receipt' : 'Save Receipt')}
             </button>
           </div>

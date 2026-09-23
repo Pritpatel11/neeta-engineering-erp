@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getStoreReceipts, deleteStoreReceipt, updateStoreReceipt, getDivisions, getContractors, getMaterials } from '../services/api';
 import { Printer, Trash2, Edit2, X } from 'lucide-react';
-import './StatementRegister.css'; // Use statement register styles
+import { Modal } from '../components/ui';
 
 export default function CRRegister() {
   const navigate = useNavigate();
@@ -210,64 +210,66 @@ export default function CRRegister() {
   }
 
   return (
-    <div className="register-container">
+    <div className="bg-white min-h-screen p-3 sm:p-6 print:p-0">
       {/* Non-printable controls */}
-      <div className="register-header-controls no-print" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-        <div style={{ display: 'flex', gap: '16px' }}>
-          {/* Year selection removed as it's now managed globally */}
+      <div className="print:hidden flex flex-wrap items-center justify-between gap-3 mb-6 bg-slate-50 p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+        <div className="flex flex-wrap items-center gap-3">
           <select
             value={divisionFilter}
             onChange={(e) => setDivisionFilter(e.target.value)}
-            className="form-control"
-            style={{ width: '150px' }}
+            className="bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-xs sm:text-sm text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]"
           >
             <option value="All">All Divisions</option>
             {divisions.map(d => <option key={d} value={d}>{d}</option>)}
           </select>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: '#8392a5' }}>From:</span>
+          <div className="flex items-center gap-2 bg-white border border-slate-300 px-2.5 py-1 rounded-xl">
+            <span className="text-xs font-semibold text-slate-500">From:</span>
             <input
               type="date"
               value={fromDate}
               onChange={(e) => setFromDate(e.target.value)}
-              className="form-control"
-              style={{ width: '130px' }}
+              className="text-xs text-slate-800 focus:outline-none border-none bg-transparent"
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: '#8392a5' }}>To:</span>
+          <div className="flex items-center gap-2 bg-white border border-slate-300 px-2.5 py-1 rounded-xl">
+            <span className="text-xs font-semibold text-slate-500">To:</span>
             <input
               type="date"
               value={toDate}
               onChange={(e) => setToDate(e.target.value)}
-              className="form-control"
-              style={{ width: '130px' }}
+              className="text-xs text-slate-800 focus:outline-none border-none bg-transparent"
             />
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={() => navigate('/create-cr')} className="btn-primary" style={{ background: '#28a745', border: 'none' }}>
-            + New Inward (CR)
+        <div className="flex items-center gap-2.5">
+          <button 
+            onClick={() => navigate('/create-cr')} 
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+          >
+            <span>+ New Inward (CR)</span>
           </button>
-          <button onClick={handlePrint} className="btn-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Printer size={16} /> Print Register
+          <button 
+            onClick={handlePrint} 
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+          >
+            <Printer size={16} /> <span>Print Register</span>
           </button>
         </div>
       </div>
 
       {/* Printable Area */}
-      <div className="register-title-section" style={{ textAlign: 'center', position: 'relative', minHeight: '140px', paddingTop: '10px' }}>
-        <img src="./logo address.png" alt="Neeta Engineering Works Logo" className="print-only" style={{ position: 'absolute', left: '20px', top: '10px', height: '130px', objectFit: 'contain' }} />
-        <h1 className="register-main-title">
+      <div className="text-center relative min-h-[140px] pt-2.5 mb-4">
+        <img src="/logo address.png" alt="Neeta Engineering Works Logo" className="hidden print:block absolute left-5 top-2.5 h-[130px] object-contain" />
+        <h1 className="text-xl sm:text-2xl font-extrabold text-red-600 uppercase tracking-tight m-0 mb-1">
           MATERIAL INWARD (CR) REGISTER 1.4.{activeYear.split('-')[0]} TO 31.3.20{activeYear.split('-')[1]}
         </h1>
-        <h2 className="register-sub-title">
+        <h2 className="text-base sm:text-lg font-bold text-blue-700 uppercase m-0">
           {divisionFilter.toUpperCase() === 'ALL' ? 'ALL DIVISIONS' : `${divisionFilter.toUpperCase()} DIVISION`} Material Inwards
         </h2>
       </div>
 
-      <div className="register-table-wrapper">
-        <table className="register-table">
+      <div className="overflow-x-auto mt-2.5">
+        <table className="w-max min-w-full border-collapse text-xs table-fixed border border-black">
           <colgroup>
             <col style={{ width: `${columnWidths.srNo}px` }} />
             <col style={{ width: `${columnWidths.receiptNo}px` }} />
@@ -280,75 +282,77 @@ export default function CRRegister() {
               <col key={mat} style={{ width: `${columnWidths.material}px` }} />
             ))}
             <col style={{ width: `${columnWidths.total}px` }} />
-            <col style={{ width: `${columnWidths.action}px` }} className="no-print" />
+            <col style={{ width: `${columnWidths.action}px` }} className="print:hidden" />
           </colgroup>
           <thead>
-            <tr>
-              <th style={{ width: `${columnWidths.srNo}px` }}>SR NO</th>
-              <th style={{ width: `${columnWidths.receiptNo}px` }}>Receipt No.</th>
-              <th style={{ width: `${columnWidths.releaseNo}px` }}>Release No.</th>
-              <th style={{ width: `${columnWidths.conName}px` }}>CON. NAME</th>
-              <th style={{ width: `${columnWidths.oNo}px` }}>O.No</th>
-              <th style={{ width: `${columnWidths.poNo}px` }}>P.O.No.</th>
-              <th style={{ width: `${columnWidths.divisionName}px` }}>Division</th>
+            <tr className="bg-white">
+              <th className="border border-black p-1 text-center font-bold">SR NO</th>
+              <th className="border border-black p-1 text-center font-bold">Receipt No.</th>
+              <th className="border border-black p-1 text-center font-bold">Release No.</th>
+              <th className="border border-black p-1 text-center font-bold">CON. NAME</th>
+              <th className="border border-black p-1 text-center font-bold">O.No</th>
+              <th className="border border-black p-1 text-center font-bold">P.O.No.</th>
+              <th className="border border-black p-1 text-center font-bold">Division</th>
 
               {materialColumns.map(mat => (
-                <th key={mat} className="material-header">
+                <th key={mat} className="border border-black text-[9px] p-0.5 text-center align-top break-all font-bold leading-tight">
                   {headerMap[mat] ? headerMap[mat].split('\n').map((line, i) => (
                     <div key={i}>{line}</div>
                   )) : mat.toUpperCase()}
                 </th>
               ))}
 
-              <th style={{ width: `${columnWidths.total}px` }}>Total</th>
-              <th className="no-print" style={{ width: `${columnWidths.action}px` }}>Action</th>
+              <th className="border border-black p-1 text-center font-bold">Total</th>
+              <th className="border border-black p-1 text-center font-bold print:hidden">Action</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={8 + materialColumns.length} style={{ textAlign: 'center', padding: '24px' }}>Loading...</td>
+                <td colSpan={8 + materialColumns.length} className="text-center py-6 text-slate-500 border border-black">Loading...</td>
               </tr>
             ) : currentRecords.map((cr, index) => {
               const totalItems = cr.materials?.reduce((sum, m) => sum + (m.qty || 0), 0) || 0;
               const srNo = indexOfFirstRecord + index + 1;
 
               return (
-                <tr key={cr._id || index}>
-                  <td className="text-center">{srNo}</td>
-                  <td className="text-center font-bold" style={{ color: '#0056b3' }}>{cr.receiptNo || ''}</td>
-                  <td className="text-center">{cr.releaseNo || ''}</td>
-                  <td className="text-left font-bold">{cr.conName || ''}</td>
-                  <td className="text-center">{cr.oNo || ''}</td>
-                  <td className="text-center">{cr.poNo || ''}</td>
-                  <td className="text-center" style={{ fontWeight: 600 }}>{cr.divisionName || ''}</td>
+                <tr key={cr._id || index} className="hover:bg-slate-50 transition-colors">
+                  <td className="border border-black text-center p-1">{srNo}</td>
+                  <td className="border border-black text-center p-1 font-bold text-blue-700">{cr.receiptNo || ''}</td>
+                  <td className="border border-black text-center p-1">{cr.releaseNo || ''}</td>
+                  <td className="border border-black text-left p-1 font-bold">{cr.conName || ''}</td>
+                  <td className="border border-black text-center p-1">{cr.oNo || ''}</td>
+                  <td className="border border-black text-center p-1">{cr.poNo || ''}</td>
+                  <td className="border border-black text-center p-1 font-semibold">{cr.divisionName || ''}</td>
 
                   {materialColumns.map(mat => {
                     const material = cr.materials?.find(m => m.name?.trim() === mat.trim());
                     const qty = material ? material.qty : 0;
                     return (
-                      <td key={mat} className="text-center material-cell">
+                      <td key={mat} className="border border-black text-center text-[11px] p-0.5">
                         {qty > 0 ? qty : '0'}
                       </td>
                     );
                   })}
 
-                  <td className="text-right font-bold">{totalItems > 0 ? totalItems : '0'}</td>
-                  <td className="text-center no-print" style={{ display: 'flex', justifyContent: 'center', gap: '8px' }}>
-                    <button
-                      onClick={() => handleEditClick(cr)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'blue', padding: '4px' }}
-                      title="Edit Basic Details"
-                    >
-                      <Edit2 size={16} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(cr._id, cr.receiptNo)}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#dc3545', padding: '4px' }}
-                      title="Delete CR & Revert Balance"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                  <td className="border border-black text-right p-1 font-bold">{totalItems > 0 ? totalItems : '0'}</td>
+                  <td className="border border-black text-center p-1 print:hidden">
+                    <div className="flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleEditClick(cr)}
+                        className="text-blue-600 hover:text-blue-800 p-1 cursor-pointer"
+                        title="Edit Basic Details"
+                      >
+                        <Edit2 size={15} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(cr._id, cr.receiptNo)}
+                        className="text-rose-600 hover:text-rose-800 p-1 cursor-pointer"
+                        title="Delete CR & Revert Balance"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               );
@@ -357,30 +361,30 @@ export default function CRRegister() {
             {/* Empty padding rows to make it look like the Excel sheet */}
             {!isLoading && Array.from({ length: Math.max(0, 15 - currentRecords.length) }).map((_, i) => (
               <tr key={`empty-${i}`}>
-                <td>&nbsp;</td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                {materialColumns.map(mat => <td key={`empty-mat-${mat}`}></td>)}
-                <td></td>
-                <td className="no-print"></td>
+                <td className="border border-black p-1">&nbsp;</td>
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1"></td>
+                {materialColumns.map(mat => <td key={`empty-mat-${mat}`} className="border border-black p-1"></td>)}
+                <td className="border border-black p-1"></td>
+                <td className="border border-black p-1 print:hidden"></td>
               </tr>
             ))}
           </tbody>
           {!isLoading && filteredReceipts.length > 0 && (
-            <tfoot style={{ position: 'sticky', bottom: 0, zIndex: 10 }}>
-              <tr style={{ borderTop: '2px solid black', borderBottom: '2px solid black' }}>
-                <td colSpan={7} className="text-right font-bold" style={{ paddingRight: '16px', fontSize: '14px', position: 'sticky', bottom: 0, backgroundColor: '#e9ecef' }}>TOTAL :</td>
+            <tfoot className="sticky bottom-0 z-10">
+              <tr className="border-t-2 border-b-2 border-black bg-slate-100 font-bold">
+                <td colSpan={7} className="border border-black text-right pr-4 text-sm sticky bottom-0 bg-slate-100">TOTAL :</td>
                 {materialColumns.map(mat => (
-                  <td key={`total-${mat}`} className="text-center font-bold material-cell" style={{ color: '#0056b3', fontSize: '13px', position: 'sticky', bottom: 0, backgroundColor: '#e9ecef' }}>
+                  <td key={`total-${mat}`} className="border border-black text-center text-blue-700 text-xs p-0.5 sticky bottom-0 bg-slate-100">
                     {columnTotals[mat] > 0 ? columnTotals[mat] : '0'}
                   </td>
                 ))}
-                <td className="text-right font-bold" style={{ color: '#0056b3', fontSize: '13px', position: 'sticky', bottom: 0, backgroundColor: '#e9ecef' }}>{grandTotal > 0 ? grandTotal : '0'}</td>
-                <td className="no-print" style={{ position: 'sticky', bottom: 0, backgroundColor: '#e9ecef' }}></td>
+                <td className="border border-black text-right text-blue-700 text-xs pr-1 sticky bottom-0 bg-slate-100 font-extrabold">{grandTotal > 0 ? grandTotal : '0'}</td>
+                <td className="border border-black print:hidden sticky bottom-0 bg-slate-100"></td>
               </tr>
             </tfoot>
           )}
@@ -389,158 +393,158 @@ export default function CRRegister() {
 
       {/* Signature Block */}
       {!isLoading && filteredReceipts.length > 0 && (
-        <div className="document-footer print-only-flex" style={{ justifyContent: 'flex-end', marginTop: '10px', paddingRight: '40px', paddingBottom: '0' }}>
-          <div className="signature-block" style={{ width: '250px', textAlign: 'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '5px' }}>
-              <img src="./sign.png" alt="Signature" style={{ height: '100px', objectFit: 'contain' }} />
+        <div className="hidden print:flex justify-end mt-4 pr-10 pb-0">
+          <div className="w-64 text-center">
+            <div className="flex justify-center mb-1">
+              <img src="/sign.png" alt="Signature" className="h-24 object-contain" />
             </div>
-            <div className="signature-line" style={{ marginBottom: '8px', fontSize: '1rem', color: '#000' }}>
+            <div className="text-black text-sm mb-2">
               ...........................................
             </div>
-            <div className="signature-label" style={{ fontSize: '0.875rem', fontWeight: '600', color: '#000' }}>Authorized Signatory</div>
-            <div className="signature-company" style={{ fontSize: '0.75rem', color: '#555', marginTop: '4px' }}>For Neeta Engineering Works</div>
+            <div className="text-xs font-semibold text-black">Authorized Signatory</div>
+            <div className="text-[11px] text-slate-600 mt-1">For Neeta Engineering Works</div>
           </div>
         </div>
       )}
 
       {/* Pagination Controls */}
       {totalPages > 1 && !isLoading && (
-        <div className="no-print" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginTop: '20px' }}>
+        <div className="print:hidden flex justify-center items-center gap-3 mt-6">
           <button
             onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
             disabled={currentPage === 1}
-            style={{ padding: '8px 16px', border: '1px solid #ccc', background: currentPage === 1 ? '#f8f9fa' : 'white', borderRadius: '4px', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', color: currentPage === 1 ? '#adb5bd' : '#495057' }}
+            className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Previous
           </button>
-          <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#495057' }}>
+          <span className="text-xs font-semibold text-slate-700">
             Page {currentPage} of {totalPages}
           </span>
           <button
             onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
             disabled={currentPage === totalPages}
-            style={{ padding: '8px 16px', border: '1px solid #ccc', background: currentPage === totalPages ? '#f8f9fa' : 'white', borderRadius: '4px', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', color: currentPage === totalPages ? '#adb5bd' : '#495057' }}
+            className="px-4 py-2 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Next
           </button>
         </div>
       )}
 
-      {/* Edit Modal */}
-      {editingCR && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', zIndex: 1000
-        }}>
-          <div style={{
-            background: 'white', padding: '20px', borderRadius: '8px',
-            width: '350px', boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0 }}>Edit Receipt Details</h3>
-              <X size={20} style={{ cursor: 'pointer' }} onClick={() => setEditingCR(null)} />
-            </div>
-
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', fontSize: '14px', marginBottom: '4px' }}>Receipt No.</label>
+      {/* Edit CR Modal */}
+      <Modal
+        isOpen={Boolean(editingCR)}
+        onClose={() => setEditingCR(null)}
+        title="Edit Material Inward (CR)"
+        size="md"
+      >
+        <div className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Receipt No</label>
               <input
                 type="text"
                 value={editFormData.receiptNo}
                 onChange={e => setEditFormData({ ...editFormData, receiptNo: e.target.value })}
-                style={{ width: '100%', padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
+                className="w-full p-2 border border-slate-200 rounded text-sm"
               />
             </div>
-
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', fontSize: '14px', marginBottom: '4px' }}>Release No.</label>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">Release No</label>
               <input
                 type="text"
                 value={editFormData.releaseNo}
                 onChange={e => setEditFormData({ ...editFormData, releaseNo: e.target.value })}
-                style={{ width: '100%', padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
+                className="w-full p-2 border border-slate-200 rounded text-sm"
               />
-            </div>
-
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', fontSize: '14px', marginBottom: '4px' }}>Contractor Name</label>
-              <input
-                type="text"
-                value={editFormData.conName}
-                onChange={e => setEditFormData({ ...editFormData, conName: e.target.value })}
-                style={{ width: '100%', padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
-                placeholder="Enter Contractor Name"
-              />
-            </div>
-
-            <div style={{ marginBottom: '12px', display: 'flex', gap: '8px' }}>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '14px', marginBottom: '4px' }}>O.No</label>
-                <input
-                  type="text"
-                  value={editFormData.oNo}
-                  onChange={e => setEditFormData({ ...editFormData, oNo: e.target.value })}
-                  style={{ width: '100%', padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
-                />
-              </div>
-              <div style={{ flex: 1 }}>
-                <label style={{ display: 'block', fontSize: '14px', marginBottom: '4px' }}>P.O.No.</label>
-                <input
-                  type="text"
-                  value={editFormData.poNo}
-                  onChange={e => setEditFormData({ ...editFormData, poNo: e.target.value })}
-                  style={{ width: '100%', padding: '6px', border: '1px solid #ccc', borderRadius: '4px' }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '20px' }}>
-              <div className="form-group">
-                <label>Division</label>
-                <select
-                  className="form-control"
-                  value={editFormData.divisionName}
-                  onChange={(e) => setEditFormData({ ...editFormData, divisionName: e.target.value })}
-                >
-                  <option value="" disabled>Select Division</option>
-                  {divisions.map(d => <option key={d} value={d}>{d}</option>)}
-                  {editFormData.divisionName && !divisions.includes(editFormData.divisionName) && (
-                    <option value={editFormData.divisionName}>{editFormData.divisionName}</option>
-                  )}
-                </select>
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '20px', maxHeight: '250px', overflowY: 'auto', border: '1px solid #ddd', padding: '10px', borderRadius: '4px' }}>
-              <h4 style={{ margin: '0 0 10px 0', fontSize: '14px' }}>Edit Materials</h4>
-              {materialColumns.map(mat => (
-                <div key={mat} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <label style={{ fontSize: '12px', flex: 1, paddingRight: '10px' }}>{mat}</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editFormData.materials?.[mat] || ''}
-                    onChange={e => setEditFormData({
-                      ...editFormData,
-                      materials: {
-                        ...editFormData.materials,
-                        [mat]: e.target.value ? parseInt(e.target.value) : 0
-                      }
-                    })}
-                    placeholder="0"
-                    style={{ width: '80px', padding: '4px', textAlign: 'right', border: '1px solid #ccc', borderRadius: '4px' }}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-              <button onClick={() => setEditingCR(null)} style={{ padding: '6px 12px', border: '1px solid #ccc', background: 'white', cursor: 'pointer', borderRadius: '4px' }}>Cancel</button>
-              <button onClick={handleSaveEdit} style={{ padding: '6px 12px', border: 'none', background: 'blue', color: 'white', cursor: 'pointer', borderRadius: '4px' }}>Save</button>
             </div>
           </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Contractor Name</label>
+            <input
+              type="text"
+              value={editFormData.conName}
+              onChange={e => setEditFormData({ ...editFormData, conName: e.target.value })}
+              className="w-full p-2 border border-slate-200 rounded text-sm"
+              placeholder="Enter Contractor Name"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">O.No</label>
+              <input
+                type="text"
+                value={editFormData.oNo}
+                onChange={e => setEditFormData({ ...editFormData, oNo: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 mb-1">P.O.No.</label>
+              <input
+                type="text"
+                value={editFormData.poNo}
+                onChange={e => setEditFormData({ ...editFormData, poNo: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded text-sm"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-slate-700 mb-1">Division</label>
+            <select
+              className="w-full p-2 border border-slate-200 rounded text-sm bg-white"
+              value={editFormData.divisionName}
+              onChange={(e) => setEditFormData({ ...editFormData, divisionName: e.target.value })}
+            >
+              <option value="" disabled>Select Division</option>
+              {divisions.map(d => <option key={d} value={d}>{d}</option>)}
+              {editFormData.divisionName && !divisions.includes(editFormData.divisionName) && (
+                <option value={editFormData.divisionName}>{editFormData.divisionName}</option>
+              )}
+            </select>
+          </div>
+
+          <div className="max-h-48 overflow-y-auto border border-slate-200 p-3 rounded bg-slate-50">
+            <h4 className="text-xs font-semibold text-slate-700 mb-2">Edit Materials</h4>
+            {materialColumns.map(mat => (
+              <div key={mat} className="flex justify-between items-center mb-2">
+                <label className="text-xs flex-1 pr-2 truncate text-slate-600" title={mat}>{mat}</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editFormData.materials?.[mat] || ''}
+                  onChange={e => setEditFormData({
+                    ...editFormData,
+                    materials: {
+                      ...editFormData.materials,
+                      [mat]: e.target.value ? parseInt(e.target.value) : 0
+                    }
+                  })}
+                  placeholder="0"
+                  className="w-20 p-1 text-right border border-slate-200 rounded text-xs bg-white font-mono"
+                />
+              </div>
+            ))}
+          </div>
+
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-100">
+            <button 
+              onClick={() => setEditingCR(null)} 
+              className="px-3 py-1.5 border border-slate-200 rounded text-sm bg-white hover:bg-slate-50"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleSaveEdit} 
+              className="px-4 py-1.5 rounded text-sm bg-[#0059bb] text-white hover:bg-[#004795] font-medium"
+            >
+              Save
+            </button>
+          </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

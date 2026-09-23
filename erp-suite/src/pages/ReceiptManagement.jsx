@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText, Plus, Trash2, Printer, Edit } from 'lucide-react';
 import { getReceipts, deleteReceipt } from '../services/api';
+import { TableWrapper, Button, EmptyState } from '../components/ui';
 
 export default function ReceiptManagement() {
   const navigate = useNavigate();
@@ -42,78 +43,82 @@ export default function ReceiptManagement() {
   };
 
   return (
-    <div className="dashboard-container">
-      <header className="dashboard-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6">
+      <header className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="dashboard-title"><FileText size={28} /> Receipt Management</h1>
-          <p className="dashboard-subtitle">View, print, and manage your saved payment receipts.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight flex items-center gap-2 m-0">
+            <FileText size={28} className="text-[#0059bb]" /> Receipt Management
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1 mb-0">View, print, and manage your saved payment receipts.</p>
         </div>
-        <button className="btn-primary" onClick={() => navigate('/create-receipt')} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Button onClick={() => navigate('/create-receipt')}>
           <Plus size={18} /> Create New Receipt
-        </button>
+        </Button>
       </header>
 
-      <div className="glass-card" style={{ padding: '20px' }}>
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden">
         {loading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>Loading receipts...</div>
+          <div className="text-center py-16 text-slate-500">Loading receipts...</div>
         ) : receipts.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#666' }}>
-            <p>No receipts found.</p>
-            <button className="btn-outline" onClick={() => navigate('/create-receipt')} style={{ marginTop: '15px' }}>
-              Create Your First Receipt
-            </button>
-          </div>
+          <EmptyState
+            title="No receipts found"
+            description="Create your first receipt to track payment incoming."
+            actionLabel="Create Receipt"
+            onAction={() => navigate('/create-receipt')}
+          />
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-              <thead style={{ background: '#f8f9fa' }}>
-                <tr>
-                  <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #ddd' }}>Receipt No</th>
-                  <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #ddd' }}>Date</th>
-                  <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #ddd' }}>Party Name</th>
-                  <th style={{ padding: '12px 15px', textAlign: 'left', borderBottom: '2px solid #ddd' }}>Bill No</th>
-                  <th style={{ padding: '12px 15px', textAlign: 'right', borderBottom: '2px solid #ddd' }}>Amount (Rs)</th>
-                  <th style={{ padding: '12px 15px', textAlign: 'center', borderBottom: '2px solid #ddd' }}>Actions</th>
+          <TableWrapper minWidth="700px">
+            <table className="w-full text-xs sm:text-sm text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50/80">
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Receipt No</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Date</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Party Name</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Bill No</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider text-right">Amount (₹)</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {receipts.map((receipt) => (
-                  <tr key={receipt._id} style={{ borderBottom: '1px solid #eee' }}>
-                    <td style={{ padding: '12px 15px', fontWeight: 'bold', color: '#2b6cb0' }}>{receipt.receiptNo}</td>
-                    <td style={{ padding: '12px 15px' }}>{receipt.date}</td>
-                    <td style={{ padding: '12px 15px' }}>{receipt.partyName}</td>
-                    <td style={{ padding: '12px 15px' }}>{receipt.billNo || '-'}</td>
-                    <td style={{ padding: '12px 15px', textAlign: 'right', fontWeight: 'bold' }}>{receipt.amount.toFixed(2)}</td>
-                    <td style={{ padding: '12px 15px', textAlign: 'center' }}>
-                      <button 
-                        onClick={() => handlePrint(receipt)} 
-                        className="btn-outline" 
-                        style={{ padding: '5px 10px', marginRight: '10px' }}
-                        title="Print Receipt"
-                      >
-                        <Printer size={16} />
-                      </button>
-                      <button 
-                        onClick={() => handleEdit(receipt)} 
-                        className="btn-outline" 
-                        style={{ padding: '5px 10px', marginRight: '10px' }}
-                        title="Edit Receipt"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(receipt._id)} 
-                        style={{ background: 'none', border: 'none', color: '#dc3545', cursor: 'pointer', padding: '5px' }}
-                        title="Delete Receipt"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                  <tr key={receipt._id} className="hover:bg-slate-50/80 transition-colors">
+                    <td className="px-4 py-3 font-semibold text-[#0059bb] font-mono">{receipt.receiptNo}</td>
+                    <td className="px-4 py-3 text-slate-600">{receipt.date}</td>
+                    <td className="px-4 py-3 font-medium text-slate-900">{receipt.partyName}</td>
+                    <td className="px-4 py-3 text-slate-600">{receipt.billNo || '-'}</td>
+                    <td className="px-4 py-3 text-right font-bold text-slate-900">
+                      ₹{(receipt.amount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex gap-2 justify-center">
+                        <button 
+                          onClick={() => handlePrint(receipt)} 
+                          className="p-1.5 text-[#0059bb] bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer" 
+                          title="Print Receipt"
+                        >
+                          <Printer size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleEdit(receipt)} 
+                          className="p-1.5 text-amber-600 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors cursor-pointer" 
+                          title="Edit Receipt"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(receipt._id)} 
+                          className="p-1.5 text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-lg transition-colors cursor-pointer" 
+                          title="Delete Receipt"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableWrapper>
         )}
       </div>
     </div>

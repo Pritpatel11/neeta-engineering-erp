@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Printer, ArrowLeft } from 'lucide-react';
+import { getQuotation } from '../services/api';
 
 function numberToWords(num) {
   if (!num) return '';
@@ -21,15 +22,29 @@ function numberToWords(num) {
 export default function QuotationPreview() {
   const location = useLocation();
   const navigate = useNavigate();
+  const searchParams = new URLSearchParams(location.search);
+  const idFromUrl = searchParams.get('id');
   
-  const quotationData = location.state?.quotationData;
+  const [quotationData, setQuotationData] = useState(location.state?.quotationData || null);
+  const [loading, setLoading] = useState(!location.state?.quotationData && !!idFromUrl);
 
   useEffect(() => {
-    if (!quotationData) {
+    if (!quotationData && idFromUrl) {
+      getQuotation(idFromUrl)
+        .then(data => {
+          setQuotationData(data);
+        })
+        .catch(err => {
+          console.error("Failed to load quotation", err);
+          navigate('/quotations');
+        })
+        .finally(() => setLoading(false));
+    } else if (!quotationData && !idFromUrl) {
       navigate('/quotations');
     }
-  }, [quotationData, navigate]);
+  }, [quotationData, idFromUrl, navigate]);
 
+  if (loading) return <div style={{ padding: 20, textAlign: 'center' }}>Loading Quotation...</div>;
   if (!quotationData) return null;
 
   const handlePrint = () => {
@@ -49,400 +64,220 @@ export default function QuotationPreview() {
   const docTitle = quotationData.documentType ? quotationData.documentType.toUpperCase() : (isEstimate ? 'ESTIMATE / PROFORMA' : 'QUOTATION');
 
   return (
-    <div className="preview-container">
-      <style>
-        {`
-          .preview-container {
-            background-color: #f0f2f5;
-            min-height: 100vh;
-            padding: 20px;
-            font-family: 'Arial', sans-serif;
-            font-size: 12px;
-            color: #000;
-          }
-          .preview-actions {
-            max-width: 210mm;
-            margin: 0 auto 20px auto;
-            display: flex;
-            justify-content: space-between;
-            background: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-          }
-          .document-paper {
-            background: white;
-            max-width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto;
-            padding: 10mm;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            box-sizing: border-box;
-          }
-          
-          /* TALLY PRIME SPECIFIC CLASSES */
-          .tally-box {
-            border: 1px solid #000;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-          }
-          .doc-title-row {
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 5px;
-            border-bottom: 1px solid #000;
-          }
-          
-          .header-grid {
-            display: flex;
-            border-bottom: 1px solid #000;
-          }
-          .header-left {
-            width: 50%;
-            border-right: 1px solid #000;
-            display: flex;
-            flex-direction: column;
-          }
-          .header-right {
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-          }
-          
-          .company-details {
-            padding: 8px;
-            flex: 1;
-            border-bottom: 1px solid #000;
-          }
-          .company-name {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 4px;
-          }
-          
-          .buyer-details {
-            padding: 8px;
-            flex: 1;
-          }
-          
-          .invoice-meta-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            height: 100%;
-          }
-          .meta-box {
-            padding: 6px;
-            border-bottom: 1px solid #000;
-            border-right: 1px solid #000;
-          }
-          .meta-box:nth-child(even) {
-            border-right: none;
-          }
-          .meta-box-full {
-            grid-column: 1 / -1;
-            border-right: none;
-          }
-          .meta-label {
-            font-size: 10px;
-            color: #333;
-          }
-          .meta-value {
-            font-weight: bold;
-            font-size: 13px;
-            margin-top: 2px;
-          }
-          
-          /* TABLE CSS */
-          .tally-table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          .tally-table th {
-            border-bottom: 1px solid #000;
-            border-right: 1px solid #000;
-            padding: 6px 4px;
-            text-align: center;
-            font-weight: normal;
-          }
-          .tally-table td {
-            border-right: 1px solid #000;
-            padding: 4px;
-            vertical-align: top;
-          }
-          .tally-table th:last-child, .tally-table td:last-child {
-            border-right: none;
-          }
-          .tally-table-body {
-            min-height: 250px; /* Forces vertical lines to extend */
-            display: block;
-          }
-          
-          /* HACK TO MAKE MIN-HEIGHT WORK WITH TABLES */
-          .table-container {
-            border-bottom: 1px solid #000;
-            min-height: 250px;
-            display: flex;
-            flex-direction: column;
-          }
-          
-          .amount-words-row {
-            padding: 6px;
-            border-bottom: 1px solid #000;
-          }
-          
-          .footer-grid {
-            display: flex;
-          }
-          .footer-left {
-            width: 50%;
-            border-right: 1px solid #000;
-            display: flex;
-            flex-direction: column;
-          }
-          .footer-right {
-            width: 50%;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-          }
-          
-          .bank-details {
-            padding: 6px;
-            border-bottom: 1px solid #000;
-          }
-          .bank-label { font-size: 11px; font-style: italic; }
-          .bank-row { display: flex; margin-bottom: 2px; }
-          .bank-row span:first-child { width: 100px; }
-          
-          .declaration {
-            padding: 6px;
-          }
-          .decl-title { font-weight: bold; text-decoration: underline; margin-bottom: 4px; font-size: 11px; }
-          .decl-text { font-size: 11px; }
-          
-          .signature-box {
-            padding: 6px;
-            text-align: right;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-            min-height: 100px;
-          }
-          .for-company {
-            font-weight: bold;
-            font-size: 13px;
-          }
-          .stretch-row { height: 100px; }
-
-          @media print {
-            @page { size: A4 portrait !important; margin: 5mm; }
-            body { background: white; margin: 0; padding: 0; -webkit-print-color-adjust: exact; }
-            .no-print { display: none !important; }
-            .preview-container { padding: 0; background: white; font-size: 11px; }
-            .document-paper { 
-              box-shadow: none; border: none; padding: 0; margin: 0; 
-              width: 100%; height: auto; min-height: 0; box-sizing: border-box; 
-            }
-            .tally-table td { padding: 2px 4px; }
-            .table-container { min-height: 50px; }
-            .signature-box { min-height: 60px; }
-            .company-name { font-size: 14px; }
-            .tally-box { border: 1px solid #000; }
-            .stretch-row { height: 30px !important; }
-          }
-        `}
-      </style>
-
-      <div className="preview-actions no-print">
-        <button className="btn-outline" onClick={() => navigate('/create-quotation', { state: { quotationData: quotationData }, replace: true })}>
-          <ArrowLeft size={16} style={{ marginRight: '6px' }} /> Back
+    <div className="p-4 sm:p-6 bg-slate-100 min-h-screen print:bg-white print:p-0 print:min-h-0 font-sans text-xs text-black flex flex-col items-center">
+      <div className="print:hidden w-full max-w-[210mm] flex items-center justify-between gap-4 mb-6 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+        <button 
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold text-xs sm:text-sm transition-colors cursor-pointer" 
+          onClick={() => navigate('/create-quotation', { state: { quotationData: quotationData }, replace: true })}
+        >
+          <ArrowLeft size={16} /> Back
         </button>
-        <button className="btn-primary" onClick={handlePrint}>
-          <Printer size={18} style={{ marginRight: '6px' }} /> Print / Save PDF
+        <button 
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#0059bb] hover:bg-[#004c9e] text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer" 
+          onClick={handlePrint}
+        >
+          <Printer size={18} /> Print / Save PDF
         </button>
       </div>
 
-      <div className="document-paper">
-        <div className="doc-title-row">
-          {docTitle}
-        </div>
-        
-        <div className="tally-box">
-          <div className="header-grid">
-            <div className="header-left">
-              <div className="company-details">
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                  <div>
-                    <div className="company-name">Neeta Engineering Works</div>
-                    <div>179, GIDC Main Road, Navadisa Road,</div>
-                    <div>Chandisar, Banaskantha, Gujarat 385510</div>
-                    <div>GSTIN/UIN: <strong>24ABHPP5386L1Z3</strong></div>
-                    <div>E-Mail: neeta5788@gmail.com</div>
+      <div className="w-full overflow-x-auto flex justify-center py-2 print:p-0 print:overflow-visible">
+        <div className="bg-white w-full max-w-[210mm] shadow-md border border-slate-300 text-black box-border print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:w-full">
+          <div className="text-center font-bold text-base p-2 border-b border-black">
+            {docTitle}
+          </div>
+          
+          <div className="border border-black w-full flex flex-col">
+            <div className="flex border-b border-black">
+              <div className="w-1/2 border-r border-black flex flex-col">
+                <div className="p-2.5 flex-1 border-b border-black">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <div className="text-base font-bold text-black mb-1">Neeta Engineering Works</div>
+                      <div className="text-xs text-slate-800">179, GIDC Main Road, Navadisa Road,</div>
+                      <div className="text-xs text-slate-800">Chandisar, Banaskantha, Gujarat 385510</div>
+                      <div className="text-xs text-slate-800 mt-1">GSTIN/UIN: <strong>24ABHPP5386L1Z3</strong></div>
+                      <div className="text-xs text-slate-800">E-Mail: neeta5788@gmail.com</div>
+                    </div>
+                    <img src="/logo address.png" alt="Logo" className="h-16 object-contain" />
                   </div>
-                  {/* Tally invoices don't usually put logo here, but we will place it top right of the box */}
-                  <img src="./logo address.png" alt="Logo" style={{ height: '80px', objectFit: 'contain' }} />
+                </div>
+                <div className="p-2.5 flex-1">
+                  <div className="text-[10px] text-slate-600 mb-1 uppercase font-semibold">Buyer (Bill to)</div>
+                  <div className="font-bold text-sm text-black">{quotationData.clientName}</div>
+                  <div className="text-xs text-slate-800">{quotationData.clientAddress}</div>
+                  {quotationData.buyerState && <div className="text-xs mt-0.5">State: <strong>{quotationData.buyerState} {quotationData.buyerStateCode ? `(Code: ${quotationData.buyerStateCode})` : ''}</strong></div>}
+                  {quotationData.clientGST && <div className="text-xs mt-0.5">GSTIN/UIN: <strong>{quotationData.clientGST}</strong></div>}
                 </div>
               </div>
-              <div className="buyer-details">
-                <div className="meta-label" style={{ marginBottom: '4px' }}>Buyer (Bill to)</div>
-                <div style={{ fontWeight: 'bold', fontSize: '14px' }}>{quotationData.clientName}</div>
-                <div>{quotationData.clientAddress}</div>
-                {quotationData.clientGST && <div>GSTIN/UIN: <strong>{quotationData.clientGST}</strong></div>}
+              
+              <div className="w-1/2 flex flex-col">
+                <div className="grid grid-cols-2 h-full text-xs">
+                  <div className="p-2 border-b border-r border-black">
+                    <div className="text-[10px] text-slate-600">{docTitle} No.</div>
+                    <div className="font-bold text-sm text-black mt-0.5">{quotationData.quotationNo}</div>
+                  </div>
+                  <div className="p-2 border-b border-black">
+                    <div className="text-[10px] text-slate-600">Dated</div>
+                    <div className="font-bold text-sm text-black mt-0.5">{formatDate(quotationData.date)}</div>
+                  </div>
+                  <div className="col-span-2 p-2 border-b border-black">
+                    <div className="text-[10px] text-slate-600">Subject / Reference</div>
+                    <div className="text-xs text-slate-800 mt-0.5">
+                      {quotationData.subject || 'As per your requirement'}
+                    </div>
+                  </div>
+                  <div className="p-2 border-b border-r border-black">
+                    <div className="text-[10px] text-slate-600">Terms of Payment</div>
+                    <div className="text-xs text-slate-800 mt-0.5">Immediate</div>
+                  </div>
+                  <div className="p-2 border-b border-black">
+                    <div className="text-[10px] text-slate-600">Contact No.</div>
+                    <div className="text-xs text-slate-800 mt-0.5">
+                      {quotationData.clientPhone || 'N/A'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="border-b border-black min-h-[200px] flex flex-col">
+              <table className="w-full border-collapse text-xs">
+                <thead>
+                  <tr className="bg-slate-50">
+                    <th className="border-b border-r border-black p-1.5 text-center font-bold w-[5%]">SI No.</th>
+                    <th className="border-b border-r border-black p-1.5 text-left font-bold w-[45%]">Description of Goods</th>
+                    <th className="border-b border-r border-black p-1.5 text-center font-bold w-[10%]">HSN/SAC</th>
+                    <th className="border-b border-r border-black p-1.5 text-right font-bold w-[10%]">Quantity</th>
+                    <th className="border-b border-r border-black p-1.5 text-right font-bold w-[10%]">Rate</th>
+                    <th className="border-b border-r border-black p-1.5 text-center font-bold w-[5%]">per</th>
+                    <th className="border-b border-black p-1.5 text-right font-bold w-[15%]">Amount</th>
+                  </tr>
+                </thead>
+                <tbody className="border-b border-black">
+                  {quotationData.items.map((item, index) => (
+                    <tr key={index}>
+                      <td className="border-r border-black p-1 text-center">{index + 1}</td>
+                      <td className="border-r border-black p-1 font-bold">{item.description}</td>
+                      <td className="border-r border-black p-1 text-center">{item.hsn || ''}</td>
+                      <td className="border-r border-black p-1 text-right font-bold font-mono">
+                        {item.quantity} {item.unit}
+                      </td>
+                      <td className="border-r border-black p-1 text-right font-mono">{item.rate.toFixed(2)}</td>
+                      <td className="border-r border-black p-1 text-center">{item.unit}</td>
+                      <td className="p-1 text-right font-bold font-mono">{item.amount.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                  
+                  {/* SUB-TOTAL ROW */}
+                  <tr>
+                    <td className="border-r border-black p-1"></td>
+                    <td className="border-r border-black p-1 text-right pr-4 font-bold pt-2">Sub-Total</td>
+                    <td className="border-r border-black p-1"></td>
+                    <td className="border-r border-black p-1"></td>
+                    <td className="border-r border-black p-1"></td>
+                    <td className="border-r border-black p-1"></td>
+                    <td className="p-1 text-right font-bold font-mono pt-2 border-t border-black">
+                      {quotationData.items.reduce((acc, item) => acc + item.amount, 0).toFixed(2)}
+                    </td>
+                  </tr>
+
+                  {/* TAX ROWS */}
+                  {quotationData.taxPercentage > 0 && (
+                    <>
+                      {(quotationData.isInterState || (quotationData.clientGST && quotationData.clientGST.substring(0, 2) !== '24')) ? (
+                        <tr>
+                          <td className="border-r border-black p-1"></td>
+                          <td className="border-r border-black p-1 text-right pr-4 text-sky-700 font-medium">IGST (Integrated Tax)</td>
+                          <td className="border-r border-black p-1"></td>
+                          <td className="border-r border-black p-1"></td>
+                          <td className="border-r border-black p-1 text-right font-mono">{quotationData.taxPercentage}%</td>
+                          <td className="border-r border-black p-1"></td>
+                          <td className="p-1 text-right font-mono">{quotationData.taxAmount.toFixed(2)}</td>
+                        </tr>
+                      ) : (
+                        <>
+                          <tr>
+                            <td className="border-r border-black p-1"></td>
+                            <td className="border-r border-black p-1 text-right pr-4 text-slate-700">CGST</td>
+                            <td className="border-r border-black p-1"></td>
+                            <td className="border-r border-black p-1"></td>
+                            <td className="border-r border-black p-1 text-right font-mono">{quotationData.taxPercentage / 2}%</td>
+                            <td className="border-r border-black p-1"></td>
+                            <td className="p-1 text-right font-mono">{(quotationData.taxAmount / 2).toFixed(2)}</td>
+                          </tr>
+                          <tr>
+                            <td className="border-r border-black p-1"></td>
+                            <td className="border-r border-black p-1 text-right pr-4 text-slate-700">SGST</td>
+                            <td className="border-r border-black p-1"></td>
+                            <td className="border-r border-black p-1"></td>
+                            <td className="border-r border-black p-1 text-right font-mono">{quotationData.taxPercentage / 2}%</td>
+                            <td className="border-r border-black p-1"></td>
+                            <td className="p-1 text-right font-mono">{(quotationData.taxAmount / 2).toFixed(2)}</td>
+                          </tr>
+                        </>
+                      )}
+                    </>
+                  )}
+                  
+                  {/* Empty stretch row */}
+                  <tr className="h-16 print:h-8">
+                    <td className="border-r border-black"></td>
+                    <td className="border-r border-black"></td>
+                    <td className="border-r border-black"></td>
+                    <td className="border-r border-black"></td>
+                    <td className="border-r border-black"></td>
+                    <td className="border-r border-black"></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr className="bg-slate-50 font-bold border-t border-black">
+                    <th colSpan="3" className="border-r border-black p-1.5 text-right">Total</th>
+                    <th className="border-r border-black p-1.5 text-right font-mono">
+                      {quotationData.items.reduce((sum, item) => sum + Number(item.quantity), 0)}
+                    </th>
+                    <th colSpan="2" className="border-r border-black p-1.5"></th>
+                    <th className="p-1.5 text-right font-mono text-sm">
+                      ₹ {quotationData.totalAmount.toFixed(2)}
+                    </th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <div className="p-2 border-b border-black text-xs">
+              <span className="text-[10px] text-slate-600 uppercase font-semibold">Amount Chargeable (in words)</span><br/>
+              <span className="font-bold text-sm">
+                INR {numberToWords(quotationData.totalAmount)}
+              </span>
+            </div>
+
+            <div className="flex">
+              <div className="w-1/2 border-r border-black flex flex-col text-xs">
+                <div className="p-2 border-b border-black">
+                  <div className="text-[10px] font-semibold italic text-slate-700">Company's Bank Details</div>
+                  <div className="flex gap-2 mt-1"><span className="w-20 font-medium">Bank Name</span><span>: <strong>The Mehsana Urban Co-operative Bank Ltd.</strong></span></div>
+                  <div className="flex gap-2"><span className="w-20 font-medium">A/c No.</span><span>: <strong>00141101001022</strong></span></div>
+                  <div className="flex gap-2"><span className="w-20 font-medium">IFS Code</span><span>: <strong>MSNU0000014</strong></span></div>
+                  <div className="flex gap-2"><span className="w-20 font-medium">Branch</span><span>: <strong>Deesa Branch</strong></span></div>
+                </div>
+                <div className="p-2">
+                  <div className="font-bold underline text-xs mb-1">Terms & Conditions</div>
+                  <div className="text-xs whitespace-pre-wrap text-slate-700 leading-relaxed">
+                    {quotationData.terms}
+                  </div>
+                </div>
+              </div>
+              <div className="w-1/2 flex flex-col justify-between p-2 text-right text-xs">
+                <div className="font-bold text-sm text-black">for Neeta Engineering Works</div>
+                <div className="flex justify-end my-2">
+                  <img src="/sign.png" alt="Signature" className="h-20 object-contain" />
+                </div>
+                <div className="font-bold text-xs">Authorised Signatory</div>
               </div>
             </div>
             
-            <div className="header-right">
-              <div className="invoice-meta-grid">
-                <div className="meta-box">
-                  <div className="meta-label">{docTitle} No.</div>
-                  <div className="meta-value">{quotationData.quotationNo}</div>
-                </div>
-                <div className="meta-box">
-                  <div className="meta-label">Dated</div>
-                  <div className="meta-value">{formatDate(quotationData.date)}</div>
-                </div>
-                <div className="meta-box meta-box-full">
-                  <div className="meta-label">Subject / Reference</div>
-                  <div className="meta-value" style={{ fontSize: '11px', fontWeight: 'normal' }}>
-                    {quotationData.subject || 'As per your requirement'}
-                  </div>
-                </div>
-                <div className="meta-box">
-                  <div className="meta-label">Terms of Payment</div>
-                  <div className="meta-value" style={{ fontSize: '11px', fontWeight: 'normal' }}>Immediate</div>
-                </div>
-                <div className="meta-box">
-                  <div className="meta-label">Contact No.</div>
-                  <div className="meta-value" style={{ fontSize: '11px', fontWeight: 'normal' }}>
-                    {quotationData.clientPhone || 'N/A'}
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
-
-          <div className="table-container">
-            <table className="tally-table">
-              <thead>
-                <tr>
-                  <th style={{ width: '5%' }}>SI No.</th>
-                  <th style={{ width: '45%' }}>Description of Goods</th>
-                  <th style={{ width: '10%' }}>HSN/SAC</th>
-                  <th style={{ width: '10%' }}>Quantity</th>
-                  <th style={{ width: '10%' }}>Rate</th>
-                  <th style={{ width: '5%' }}>per</th>
-                  <th style={{ width: '15%' }}>Amount</th>
-                </tr>
-              </thead>
-              <tbody style={{ borderBottom: '1px solid #000' }}>
-                {quotationData.items.map((item, index) => (
-                  <tr key={index}>
-                    <td style={{ textAlign: 'center' }}>{index + 1}</td>
-                    <td style={{ fontWeight: 'bold' }}>{item.description}</td>
-                    <td style={{ textAlign: 'center' }}>{item.hsn || ''}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                      {item.quantity} {item.unit}
-                    </td>
-                    <td style={{ textAlign: 'right' }}>{item.rate.toFixed(2)}</td>
-                    <td style={{ textAlign: 'center' }}>{item.unit}</td>
-                    <td style={{ textAlign: 'right', fontWeight: 'bold' }}>{item.amount.toFixed(2)}</td>
-                  </tr>
-                ))}
-                
-                {/* SUB-TOTAL ROW */}
-                <tr>
-                  <td></td>
-                  <td style={{ textAlign: 'right', paddingRight: '20px', fontWeight: 'bold', paddingTop: '10px' }}>Sub-Total</td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
-                  <td style={{ textAlign: 'right', fontWeight: 'bold', paddingTop: '10px', borderTop: '1px solid #000' }}>
-                    {quotationData.items.reduce((acc, item) => acc + item.amount, 0).toFixed(2)}
-                  </td>
-                </tr>
-
-                {/* TAX ROWS */}
-                {quotationData.taxPercentage > 0 && (
-                  <>
-                    <tr>
-                      <td></td>
-                      <td style={{ textAlign: 'right', paddingRight: '20px' }}>CGST</td>
-                      <td></td>
-                      <td></td>
-                      <td style={{ textAlign: 'right' }}>{quotationData.taxPercentage / 2}%</td>
-                      <td></td>
-                      <td style={{ textAlign: 'right' }}>{(quotationData.taxAmount / 2).toFixed(2)}</td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td style={{ textAlign: 'right', paddingRight: '20px' }}>SGST</td>
-                      <td></td>
-                      <td></td>
-                      <td style={{ textAlign: 'right' }}>{quotationData.taxPercentage / 2}%</td>
-                      <td></td>
-                      <td style={{ textAlign: 'right' }}>{(quotationData.taxAmount / 2).toFixed(2)}</td>
-                    </tr>
-                  </>
-                )}
-                
-                {/* This empty row stretches the table */}
-                <tr className="stretch-row">
-                  <td></td><td></td><td></td><td></td><td></td><td></td><td></td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <th colSpan="3" style={{ textAlign: 'right', borderRight: '1px solid #000' }}>Total</th>
-                  <th style={{ textAlign: 'right', borderRight: '1px solid #000' }}>
-                    {quotationData.items.reduce((sum, item) => sum + Number(item.quantity), 0)}
-                  </th>
-                  <th colSpan="2" style={{ borderRight: '1px solid #000' }}></th>
-                  <th style={{ textAlign: 'right', fontWeight: 'bold', fontSize: '14px' }}>
-                    ₹ {quotationData.totalAmount.toFixed(2)}
-                  </th>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-
-          <div className="amount-words-row">
-            <span className="meta-label">Amount Chargeable (in words)</span><br/>
-            <span style={{ fontWeight: 'bold' }}>
-              INR {numberToWords(quotationData.totalAmount)}
-            </span>
-          </div>
-
-          <div className="footer-grid">
-            <div className="footer-left">
-              <div className="bank-details">
-                <div className="bank-label">Company's Bank Details</div>
-                <div className="bank-row"><span>Bank Name</span><span>: <strong>The Mehsana Urban Co-operative Bank Ltd.</strong></span></div>
-                <div className="bank-row"><span>A/c No.</span><span>: <strong>00141101001022</strong></span></div>
-                <div className="bank-row"><span>IFS Code</span><span>: <strong>MSNU0000014</strong></span></div>
-                <div className="bank-row"><span>Branch </span><span>: <strong>Deesa Branch</strong></span></div>
-              </div>
-              <div className="declaration">
-                <div className="decl-title">Terms & Conditions</div>
-                <div className="decl-text" style={{ whiteSpace: 'pre-wrap' }}>
-                  {quotationData.terms}
-                </div>
-              </div>
-            </div>
-            <div className="footer-right">
-              <div className="signature-box">
-                <div className="for-company">for Neeta Engineering Works</div>
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
-                  <img src="./sign.png" alt="Signature" style={{ height: '130px', objectFit: 'contain' }} />
-                </div>
-                <div style={{ marginTop: '5px', fontWeight: 'bold' }}>Authorised Signatory</div>
-              </div>
-            </div>
-          </div>
-          
         </div>
         
         {/* <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '10px', color: '#666' }}>

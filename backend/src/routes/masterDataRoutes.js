@@ -53,4 +53,11 @@ router.post('/private-parties', masterDataController.addPrivateParty);
 router.put('/private-parties/:id', masterDataController.updatePrivateParty);
 router.delete('/private-parties/:id', masterDataController.deletePrivateParty);
 
+// Raw Materials (For Purchase Management & Procurement)
+router.get('/raw-materials', masterDataController.getRawMaterials);
+router.get('/raw-materials/:id', masterDataController.getRawMaterialById);
+router.post('/raw-materials', masterDataController.addRawMaterial);
+router.put('/raw-materials/:id', masterDataController.updateRawMaterial);
+router.delete('/raw-materials/:id', masterDataController.deleteRawMaterial);
+
 module.exports = router;

@@ -7,17 +7,54 @@ const api = axios.create({
   },
 });
 
-// Intercept requests to add the financial year header
+// Intercept requests to add the financial year and auth header
 api.interceptors.request.use(
   (config) => {
     const fy = localStorage.getItem('activeFinancialYear');
     if (fy) {
       config.headers['x-financial-year'] = fy;
     }
+    const token = localStorage.getItem('erp_token') || sessionStorage.getItem('erp_token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
 );
+
+// Intercept responses for auth expiration
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      // Don't wipe token if the request was to login itself
+      if (!error.config?.url?.includes('/auth/login')) {
+        localStorage.removeItem('erp_token');
+        sessionStorage.removeItem('erp_token');
+        localStorage.removeItem('erp_user');
+        window.dispatchEvent(new Event('erp_auth_expired'));
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// Auth
+export const loginApi = async (username, password) => {
+  const res = await api.post('/auth/login', { username, password });
+  return res.data;
+};
+
+export const getMeApi = async () => {
+  const res = await api.get('/auth/me');
+  return res.data;
+};
+
+export const seedAdminApi = async () => {
+  const res = await api.post('/auth/seed');
+  return res.data;
+};
 
 // Health check
 export const checkHealth = async () => {
@@ -78,6 +115,13 @@ export const addPrivateMaterial = async (data) => await api.post('/master-data/p
 export const updatePrivateMaterial = async (id, data) => await api.put(`/master-data/private-materials/${id}`, data).then(res => res.data);
 export const deletePrivateMaterial = async (id) => await api.delete(`/master-data/private-materials/${id}`).then(res => res.data);
 
+// Raw Materials (For Purchase Management & Procurement)
+export const getRawMaterials = async (params) => await api.get('/master-data/raw-materials', { params }).then(res => res.data);
+export const getRawMaterialById = async (id) => await api.get(`/master-data/raw-materials/${id}`).then(res => res.data);
+export const addRawMaterial = async (data) => await api.post('/master-data/raw-materials', data).then(res => res.data);
+export const updateRawMaterial = async (id, data) => await api.put(`/master-data/raw-materials/${id}`, data).then(res => res.data);
+export const deleteRawMaterial = async (id) => await api.delete(`/master-data/raw-materials/${id}`).then(res => res.data);
+
 export const getDivisions = async () => await api.get('/master-data/divisions').then(res => res.data);
 export const addDivision = async (data) => await api.post('/master-data/divisions', data).then(res => res.data);
 export const updateDivision = async (id, data) => await api.put(`/master-data/divisions/${id}`, data).then(res => res.data);
@@ -136,6 +180,18 @@ export const createQuotation = async (data) => await api.post('/quotations', dat
 export const updateQuotation = async (id, data) => await api.put(`/quotations/${id}`, data).then(res => res.data);
 export const deleteQuotation = async (id) => await api.delete(`/quotations/${id}`).then(res => res.data);
 
+// Private Invoices
+export const getPrivateInvoices = async (params) => await api.get('/private-invoices', { params }).then(res => res.data);
+export const getPrivateInvoice = async (id) => await api.get(`/private-invoices/${id}`).then(res => res.data);
+export const getNextPrivateInvoiceNo = async () => await api.get('/private-invoices/next-no').then(res => res.data);
+export const createPrivateInvoice = async (data) => await api.post('/private-invoices', data).then(res => res.data);
+export const updatePrivateInvoice = async (id, data) => await api.put(`/private-invoices/${id}`, data).then(res => res.data);
+export const deletePrivateInvoice = async (id) => await api.delete(`/private-invoices/${id}`).then(res => res.data);
+export const sendPrivateInvoiceEmail = async (id, payload) => {
+  const url = id && id !== 'direct' ? `/private-invoices/${id}/send-email` : '/private-invoices/send-email';
+  return await api.post(url, payload).then(res => res.data);
+};
+
 // Receipts
 export const getReceipts = async () => await api.get('/receipts').then(res => res.data);
 export const getNextReceiptNo = async () => await api.get('/receipts/next-no').then(res => res.data);
@@ -147,4 +203,72 @@ export const triggerBackup = async () => await api.post('/backup').then(res => r
 export const getBackups = async () => await api.get('/backups').then(res => res.data);
 export const restoreBackup = async (filename) => await api.post('/restore', { filename }).then(res => res.data);
 
+// Users Management (Admin)
+export const getUsers = async () => await api.get('/users').then(res => res.data);
+export const createUser = async (data) => await api.post('/users', data).then(res => res.data);
+export const updateUser = async (id, data) => await api.put(`/users/${id}`, data).then(res => res.data);
+export const deleteUser = async (id) => await api.delete(`/users/${id}`).then(res => res.data);
+
+// Tasks & Work Progress (Owner & Team)
+export const getTasks = async (params) => await api.get('/tasks', { params }).then(res => res.data);
+export const createTask = async (data) => await api.post('/tasks', data).then(res => res.data);
+export const updateTask = async (id, data) => await api.put(`/tasks/${id}`, data).then(res => res.data);
+export const addTaskComment = async (id, data) => await api.post(`/tasks/${id}/comments`, data).then(res => res.data);
+export const deleteTask = async (id) => await api.delete(`/tasks/${id}`).then(res => res.data);
+export const checkTaskReminders = async () => await api.post('/tasks/check-reminders').then(res => res.data);
+export const getOwnerSummary = async () => await api.get('/tasks/owner-summary').then(res => res.data);
+
+// Real-Time In-App Notifications
+export const getNotifications = async () => await api.get('/notifications').then(res => res.data);
+export const markNotificationRead = async (id) => await api.put(`/notifications/${id}/read`).then(res => res.data);
+export const markAllNotificationsRead = async () => await api.put('/notifications/mark-all-read').then(res => res.data);
+export const deleteNotification = async (id) => await api.delete(`/notifications/${id}`).then(res => res.data);
+
+// AI Accounting Chatbot (Groq Tool Calling)
+export const chatWithAi = async (messages, confirmedAction = null) => {
+  const res = await api.post('/ai/chat', { messages, confirmedAction });
+  return res.data;
+};
+export const getAiAuditLogs = async () => await api.get('/ai/audit-logs').then(res => res.data);
+export const saveGroqApiKey = async (apiKey) => await api.post('/ai/save-key', { apiKey }).then(res => res.data);
+// Role-Based Dashboards (Real Database Data)
+export const getAdminDashboardData = async (params) => await api.get('/dashboards/admin', { params }).then(res => res.data);
+export const getOwnerDashboardData = async (params) => await api.get('/dashboards/owner', { params }).then(res => res.data);
+export const getAccountsDashboardData = async (params) => await api.get('/dashboards/accounts', { params }).then(res => res.data);
+export const getStoreDashboardData = async (params) => await api.get('/dashboards/store', { params }).then(res => res.data);
+export const getProductionDashboardData = async (params) => await api.get('/dashboards/production', { params }).then(res => res.data);
+export const getQualityDashboardData = async (params) => await api.get('/dashboards/quality', { params }).then(res => res.data);
+export const getEmployeeDashboardData = async (params) => await api.get('/dashboards/employee', { params }).then(res => res.data);
+
+
+// GSTIN Verification & Compliance
+export const verifyGstinApi = async (gstin) => await api.post('/gst/verify', { gstin }).then(r => r.data);
+export const getGstVerificationHistory = async () => await api.get('/gst/history').then(r => r.data);
+
+// Private Party Payment Tracking & Ledger (Khata / Hisab)
+export const recordPrivatePayment = async (data) => await api.post('/private-payments', data).then(r => r.data);
+export const deletePrivatePayment = async (id) => await api.delete(`/private-payments/${id}`).then(r => r.data);
+export const getPrivatePartyLedger = async (partyId) => await api.get(`/private-payments/party/${partyId}`).then(r => r.data);
+export const getAllPartiesLedgerSummary = async () => await api.get('/private-payments/summary').then(r => r.data);
+export const sendLedgerEmail = async (partyId, data) => await api.post(`/private-payments/party/${partyId}/send-email`, data).then(r => r.data);
+
+// Purchase Management & Vendor APIs (Private Materials)
+export const getVendors = async (params) => await api.get('/vendors', { params }).then(r => r.data);
+export const getVendorById = async (id) => await api.get(`/vendors/${id}`).then(r => r.data);
+export const createVendor = async (data) => await api.post('/vendors', data).then(r => r.data);
+export const updateVendor = async (id, data) => await api.put(`/vendors/${id}`, data).then(r => r.data);
+export const deleteVendor = async (id) => await api.delete(`/vendors/${id}`).then(r => r.data);
+
+export const getPurchaseOrders = async (params) => await api.get('/purchases', { params }).then(r => r.data);
+export const getPurchaseOrderById = async (id) => await api.get(`/purchases/${id}`).then(r => r.data);
+export const createPurchaseRequirement = async (data) => await api.post('/purchases', data).then(r => r.data);
+export const sendQuotationRequests = async (id, data) => await api.post(`/purchases/${id}/send-rfq`, data).then(r => r.data);
+export const recordVendorEstimate = async (id, data) => await api.post(`/purchases/${id}/estimates`, data).then(r => r.data);
+export const submitForOwnerApproval = async (id, data) => await api.post(`/purchases/${id}/submit-approval`, data).then(r => r.data);
+export const ownerApprovalAction = async (id, data) => await api.post(`/purchases/${id}/owner-action`, data).then(r => r.data);
+export const recordMaterialReceipt = async (id, data) => await api.post(`/purchases/${id}/receive-material`, data).then(r => r.data);
+export const recordAccountsPayment = async (id, data) => await api.post(`/purchases/${id}/payments`, data).then(r => r.data);
+export const deletePurchaseOrder = async (id) => await api.delete(`/purchases/${id}`).then(r => r.data);
+
 export default api;
+

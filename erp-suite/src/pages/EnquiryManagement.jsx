@@ -82,154 +82,52 @@ export default function EnquiryManagement() {
 
   const getStatusBadgeClass = (status) => {
     switch(status) {
-      case 'Pending': return 'badge-warning';
-      case 'Contacted': return 'badge-secondary';
-      case 'Converted': return 'badge-success';
-      case 'Rejected': return 'badge-error';
-      default: return '';
+      case 'Pending': return 'bg-amber-100 text-amber-800 border border-amber-300';
+      case 'Contacted': return 'bg-blue-100 text-blue-800 border border-blue-300';
+      case 'Converted': return 'bg-emerald-100 text-emerald-800 border border-emerald-300';
+      case 'Rejected': return 'bg-rose-100 text-rose-800 border border-rose-300';
+      default: return 'bg-slate-100 text-slate-700 border border-slate-200';
     }
   };
 
   return (
-    <div className="enquiry-container">
-      <style>{`
-        .enquiry-container {
-          padding: 24px 32px;
-          max-width: 1400px;
-          margin: 0 auto;
-        }
-        .enquiry-header-card {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 24px;
-          margin-bottom: 24px;
-        }
-        .enquiry-title {
-          font-size: 24px;
-          font-weight: 700;
-          color: #1b2e4b;
-          margin: 0 0 8px 0;
-        }
-        .enquiry-subtitle {
-          color: #6c757d;
-          font-size: 14px;
-          margin: 0;
-        }
-        .enquiry-filters-card {
-          display: flex;
-          gap: 20px;
-          padding: 20px 24px;
-          margin-bottom: 24px;
-          align-items: flex-end;
-        }
-        .filter-group {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-        .filter-label {
-          font-size: 12px;
-          font-weight: 600;
-          color: #495057;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-        .filter-input, .filter-select {
-          padding: 10px 16px;
-          border: 1px solid #dee2e6;
-          border-radius: 8px;
-          font-size: 14px;
-          color: #495057;
-          background-color: #f8f9fa;
-          transition: all 0.2s;
-          outline: none;
-        }
-        .filter-input:focus, .filter-select:focus {
-          border-color: #0d6efd;
-          background-color: white;
-          box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
-        }
-        .enquiry-table-card {
-          background: white;
-          border-radius: 12px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-          overflow: hidden;
-          margin-bottom: 24px;
-        }
-        .modern-table {
-          width: 100%;
-          border-collapse: collapse;
-        }
-        .modern-table th {
-          background: #f8f9fa;
-          padding: 16px 20px;
-          text-align: left;
-          font-size: 12px;
-          font-weight: 600;
-          color: #6c757d;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          border-bottom: 2px solid #dee2e6;
-        }
-        .modern-table td {
-          padding: 16px 20px;
-          border-bottom: 1px solid #f1f3f5;
-          vertical-align: top;
-        }
-        .table-row-hover:hover {
-          background-color: #f8f9fa;
-        }
-        .badge {
-          padding: 6px 12px;
-          border-radius: 20px;
-          font-size: 12px;
-          font-weight: 600;
-          display: inline-block;
-        }
-        .badge-warning { background: #fff3cd; color: #856404; }
-        .badge-secondary { background: #e2e3e5; color: #383d41; }
-        .badge-success { background: #d4edda; color: #155724; }
-        .badge-error { background: #f8d7da; color: #721c24; }
-        .spin-icon { animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-      `}</style>
-
-      <div className="enquiry-header-card glass-panel">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-[1400px] mx-auto space-y-6">
+      {/* Header Card */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 sm:p-6 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
         <div>
-          <h1 className="register-title">Website Enquiries</h1>
-          <p className="register-subtitle">Manage leads directly from your Google Sheets</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Website Enquiries</h1>
+          <p className="text-sm text-slate-500 mt-1">Manage leads directly synced from your Google Sheets</p>
         </div>
         <button 
           onClick={handleSync} 
           disabled={isSyncing}
-          className="btn-primary"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-[#0059bb] hover:bg-[#004899] active:bg-[#003c82] disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-xs transition-all cursor-pointer"
         >
-          <RefreshCw size={18} className={isSyncing ? "spin-icon" : ""} />
+          <RefreshCw size={18} className={isSyncing ? "animate-spin" : ""} />
           {isSyncing ? 'Syncing...' : 'Sync from Google Sheets'}
         </button>
       </div>
 
-      <div className="enquiry-filters-card glass-panel">
-        <div className="filter-group">
-          <label className="filter-label">Search Enquiries</label>
-          <div style={{ position: 'relative' }}>
-            <Search size={18} style={{ position: 'absolute', left: '12px', top: '10px', color: '#6c757d' }} />
+      {/* Filters Card */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-end gap-4 p-5 sm:p-6 bg-white rounded-2xl border border-slate-200/80 shadow-xs">
+        <div className="flex flex-col gap-1.5 flex-1 sm:max-w-xs">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Search Enquiries</label>
+          <div className="relative">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
             <input 
               type="text" 
-              className="filter-input"
+              className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all"
               placeholder="Name, Phone, Email, Subject..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ paddingLeft: '36px', width: '300px' }}
             />
           </div>
         </div>
 
-        <div className="filter-group">
-          <label className="filter-label">Status Filter</label>
+        <div className="flex flex-col gap-1.5 sm:w-48">
+          <label className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Status Filter</label>
           <select 
-            className="filter-select"
+            className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all cursor-pointer"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -242,70 +140,70 @@ export default function EnquiryManagement() {
         </div>
       </div>
 
-      <div className="enquiry-table-card">
+      {/* Enquiries Table Card */}
+      <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         {isLoading ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>Loading enquiries...</div>
+          <div className="text-center py-12 text-slate-500 text-sm">Loading enquiries...</div>
         ) : filteredEnquiries.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '40px', color: '#6c757d' }}>No enquiries found. Click 'Sync' to fetch from website.</div>
+          <div className="text-center py-12 text-slate-500 text-sm">No enquiries found. Click 'Sync' to fetch from website.</div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table className="modern-table" style={{ minWidth: '1100px' }}>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[1000px]">
             <thead>
-              <tr>
-                <th style={{ width: '12%' }}>Date & Time</th>
-                <th style={{ width: '18%' }}>Client Name</th>
-                <th style={{ width: '15%' }}>Contact Info</th>
-                <th style={{ width: '35%' }}>Subject & Message</th>
-                <th style={{ width: '12%' }}>Status</th>
-                <th style={{ width: '8%', textAlign: 'center' }}>Actions</th>
+              <tr className="bg-slate-50 border-b border-slate-200">
+                <th className="px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[12%]">Date & Time</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[18%]">Client Name</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[15%]">Contact Info</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[35%]">Subject & Message</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[10%]">Status</th>
+                <th className="px-5 py-3.5 text-xs font-semibold text-slate-500 uppercase tracking-wider w-[10%] text-center">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-slate-100">
               {currentRecords.map((enq) => (
-                <tr key={enq._id} className="table-row-hover">
-                  <td>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      <span style={{ fontWeight: '500', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Calendar size={14} color="#6c757d" /> {enq.date}
+                <tr key={enq._id} className="hover:bg-slate-50/70 transition-colors">
+                  <td className="px-5 py-4 align-top">
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-medium text-slate-800 flex items-center gap-1.5">
+                        <Calendar size={13} className="text-slate-400" /> {enq.date}
                       </span>
-                      <span style={{ fontSize: '12px', color: '#6c757d', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Clock size={14} color="#6c757d" /> {enq.time}
+                      <span className="text-xs text-slate-500 flex items-center gap-1.5">
+                        <Clock size={13} className="text-slate-400" /> {enq.time}
                       </span>
                     </div>
                   </td>
-                  <td>
-                    <div style={{ fontWeight: '600', color: '#1b2e4b' }}>{enq.name}</div>
+                  <td className="px-5 py-4 align-top">
+                    <div className="font-semibold text-sm text-slate-900">{enq.name}</div>
                   </td>
-                  <td>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <td className="px-5 py-4 align-top">
+                    <div className="flex flex-col gap-1 text-xs">
                       {enq.phone && (
-                        <span style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <Phone size={12} color="#0d6efd" /> {enq.phone}
+                        <span className="flex items-center gap-1.5 text-[#0059bb]">
+                          <Phone size={12} /> {enq.phone}
                         </span>
                       )}
                       {enq.email && (
-                        <span style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '6px', color: '#6c757d' }}>
+                        <span className="flex items-center gap-1.5 text-slate-500 truncate max-w-[200px]" title={enq.email}>
                           <Mail size={12} /> {enq.email}
                         </span>
                       )}
                     </div>
                   </td>
-                  <td>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                      {enq.subject && <span style={{ fontWeight: '600', fontSize: '13px' }}>{enq.subject}</span>}
-                      {enq.message && <span style={{ fontSize: '13px', color: '#495057' }}>{enq.message}</span>}
+                  <td className="px-5 py-4 align-top">
+                    <div className="flex flex-col gap-1">
+                      {enq.subject && <span className="font-semibold text-xs text-slate-900">{enq.subject}</span>}
+                      {enq.message && <span className="text-xs text-slate-600 whitespace-pre-wrap leading-relaxed">{enq.message}</span>}
                     </div>
                   </td>
-                  <td>
-                    <span className={`badge ${getStatusBadgeClass(enq.status)}`}>
+                  <td className="px-5 py-4 align-top">
+                    <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold ${getStatusBadgeClass(enq.status)}`}>
                       {enq.status || 'Pending'}
                     </span>
                   </td>
-                  <td>
-                    <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <td className="px-5 py-4 align-top">
+                    <div className="flex items-center gap-2 justify-center">
                       <select 
-                        className="filter-select"
-                        style={{ padding: '4px', fontSize: '12px', height: 'auto' }}
+                        className="px-2 py-1 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-700 focus:outline-none focus:ring-1 focus:ring-[#0059bb]"
                         value={enq.status}
                         onChange={(e) => handleStatusChange(enq._id, e.target.value)}
                       >
@@ -315,10 +213,9 @@ export default function EnquiryManagement() {
                         <option value="Rejected">Rejected</option>
                       </select>
                       <button 
-                        className="icon-btn-small" 
+                        className="p-1.5 text-[#0059bb] hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors cursor-pointer"
                         title="Create Quotation"
                         onClick={() => navigate('/create-quotation', { state: { enquiryData: enq } })}
-                        style={{ color: '#0d6efd', background: 'rgba(13, 110, 253, 0.1)', padding: '6px', borderRadius: '4px', border: 'none', cursor: 'pointer' }}
                       >
                         <FileText size={16} />
                       </button>
@@ -334,25 +231,23 @@ export default function EnquiryManagement() {
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="pagination-controls glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 20px', marginTop: '20px' }}>
-          <div style={{ fontSize: '14px', color: '#6c757d' }}>
-            Showing {indexOfFirstRecord + 1} to {Math.min(indexOfLastRecord, filteredEnquiries.length)} of {filteredEnquiries.length} records
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 bg-white rounded-2xl border border-slate-200/80 shadow-xs text-sm">
+          <div className="text-xs text-slate-500">
+            Showing <span className="font-semibold text-slate-700">{indexOfFirstRecord + 1}</span> to <span className="font-semibold text-slate-700">{Math.min(indexOfLastRecord, filteredEnquiries.length)}</span> of <span className="font-semibold text-slate-700">{filteredEnquiries.length}</span> records
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
+          <div className="flex items-center gap-2">
             <button 
-              className="btn-outline" 
-              style={{ padding: '6px 12px', fontSize: '13px' }}
+              className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
             >
               Previous
             </button>
-            <span style={{ padding: '6px 12px', fontSize: '14px', fontWeight: '500' }}>
+            <span className="px-3 py-1.5 text-xs font-semibold text-slate-700">
               Page {currentPage} of {totalPages}
             </span>
             <button 
-              className="btn-outline" 
-              style={{ padding: '6px 12px', fontSize: '13px' }}
+              className="px-3 py-1.5 text-xs font-semibold rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
             >

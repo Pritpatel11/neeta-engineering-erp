@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Printer, ArrowLeft } from 'lucide-react';
 import { getInvoiceDivisions } from '../services/api';
-import './ChallanPreview.css'; 
 
 export default function IndemnityBond() {
   const getSavedData = () => {
@@ -75,246 +74,203 @@ export default function IndemnityBond() {
     window.print();
   };
 
-  return (
-    <div className="preview-container" style={{ padding: '20px', backgroundColor: '#f3f4f6', minHeight: '100vh' }}>
-      <style>
-        {`
-          @media print {
-            @page {
-              size: A4 portrait;
-              margin: 20mm;
-              margin-top: 2.4in;
-            }
-            body {
-              background-color: white !important;
-            }
-            .no-print {
-              display: none !important;
-            }
-            .preview-container {
-              padding: 0 !important;
-              background-color: white !important;
-            }
-            .document-paper {
-              box-shadow: none !important;
-              padding: 0 !important;
-            }
-            .bond-input, .bond-textarea {
-              border: none !important;
-              background: transparent !important;
-              padding: 0 !important;
-            }
-          }
-          .bond-input, .bond-textarea {
-            width: 100%;
-            border: 1px dashed #ccc;
-            background: #fff9e6;
-            font-family: inherit;
-            font-size: inherit;
-            color: inherit;
-            padding: 4px;
-            box-sizing: border-box;
-            text-align: center;
-            border-radius: 2px;
-          }
-          .bond-textarea {
-            resize: none;
-            overflow: hidden;
-            display: block;
-            line-height: 1.2;
-          }
-          .bond-input:focus, .bond-textarea:focus {
-            outline: 1px solid #0066cc;
-            background: #fff;
-            border-style: solid;
-          }
-        `}
-      </style>
-      
-      <div className="preview-actions no-print" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', backgroundColor: 'white', padding: '15px 20px', borderRadius: '8px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', maxWidth: '800px', margin: '0 auto 20px auto' }}>
-        <button className="btn-outline" onClick={() => navigate('/')} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 12px', border: '1px solid #ccc', borderRadius: '4px', cursor: 'pointer', background: 'transparent' }}>
-          <ArrowLeft size={16} /> Dashboard
-        </button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <label style={{ fontWeight: 'bold' }}>Company:</label>
-          <select 
-            value={selectedCompany} 
-            onChange={(e) => setSelectedCompany(e.target.value)}
-            style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none', cursor: 'pointer' }}
-          >
-            <option value="Neeta">Neeta Engineering Work</option>
-            <option value="KCPatel">K.C.PATEL</option>
-          </select>
+  const bondInputClass = "w-full border border-dashed border-slate-300 bg-amber-50 text-inherit p-1 box-border text-center rounded focus:outline-none focus:border-[#0059bb] focus:bg-white focus:border-solid focus:ring-1 focus:ring-[#0059bb] print:border-none print:bg-transparent print:p-0 text-xs";
+  const bondTextareaClass = "w-full border border-dashed border-slate-300 bg-amber-50 text-inherit p-1 box-border text-center rounded resize-none overflow-hidden block leading-tight focus:outline-none focus:border-[#0059bb] focus:bg-white focus:border-solid focus:ring-1 focus:ring-[#0059bb] print:border-none print:bg-transparent print:p-0 text-xs";
 
-          <label style={{ fontWeight: 'bold', marginLeft: '10px' }}>Division:</label>
-          <select 
-            value={selectedDivision} 
-            onChange={(e) => setSelectedDivision(e.target.value)}
-            style={{ padding: '8px 12px', borderRadius: '4px', border: '1px solid #ccc', outline: 'none', cursor: 'pointer' }}
-          >
-            {divisions.map(div => (
-              <option key={div._id || div.name} value={div.name}>{div.name}</option>
-            ))}
-            {divisions.length === 0 && <option value="Deesa-1">Deesa-1</option>}
-          </select>
+  return (
+    <div className="p-3 sm:p-6 bg-slate-50 min-h-screen flex flex-col items-center print:bg-white print:p-0 print:min-h-0">
+      <div className="print:hidden w-full max-w-4xl flex flex-wrap items-center justify-between gap-3 mb-6 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+        <button 
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-300 text-[#0059bb] rounded-xl font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-colors cursor-pointer" 
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft size={16} /> <span>Dashboard</span>
+        </button>
+
+        <div className="flex flex-wrap items-center gap-3 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl text-xs">
+          <div className="flex items-center gap-1.5">
+            <label className="font-bold text-slate-700">Company:</label>
+            <select 
+              value={selectedCompany} 
+              onChange={(e) => setSelectedCompany(e.target.value)}
+              className="bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-[#0059bb]"
+            >
+              <option value="Neeta">Neeta Engineering Work</option>
+              <option value="KCPatel">K.C.PATEL</option>
+            </select>
+          </div>
+
+          <div className="hidden sm:block w-px h-5 bg-slate-300"></div>
+
+          <div className="flex items-center gap-1.5">
+            <label className="font-bold text-slate-700">Division:</label>
+            <select 
+              value={selectedDivision} 
+              onChange={(e) => setSelectedDivision(e.target.value)}
+              className="bg-white border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-[#0059bb]"
+            >
+              {divisions.map(div => (
+                <option key={div._id || div.name} value={div.name}>{div.name}</option>
+              ))}
+              {divisions.length === 0 && <option value="Deesa-1">Deesa-1</option>}
+            </select>
+          </div>
         </div>
-        <button className="btn-primary" onClick={handlePrint} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Printer size={18} /> Print Bond
+
+        <button 
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#0059bb] hover:bg-[#004899] text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer" 
+          onClick={handlePrint}
+        >
+          <Printer size={16} /> <span>Print Bond</span>
         </button>
       </div>
 
-      <div className="document-paper" style={{ padding: '40px', paddingTop: '1in', fontFamily: 'Arial, sans-serif', maxWidth: '800px', margin: '0 auto', backgroundColor: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', lineHeight: '1.6', fontSize: '14px', color: '#000' }}>
-        
-        <div style={{ textAlign: 'center', fontWeight: 'bold', marginBottom: '20px', textDecoration: 'underline' }}>INDEMNITY BOND CUM UNDERTAKING</div>
-        
-        <div>Uttar Gujarat Vij Company Limited</div>
-        <div>{(() => {
-          const match = selectedDivision.match(/-(\d+)$/);
-          return match ? `O&M Division -${match[1]}` : 'O&M Division';
-        })()}</div>
-        <div>{selectedDivision.split('-')[0] || selectedDivision}</div>
-        <div>GSTIN NO:24AAACU6551F1ZI</div>
-        <br />
-        <div><strong>Sub:</strong> Payment Of GST Amount and filing Of GST Return</div>
-        <br />
-        <div>Sir/Madam</div>
-        <div style={{ textAlign: 'justify', marginBottom: '15px' }}>
-          With reference to payment of GST amount and filing of GST Return for availing input Tax Credit (ITC) By you as per Eligibility Provisions for The Identified Invoices raised By Us, We, M/S. <u>{currentCompany.name}</u>  (the Firm/Company) Having Our Registered Office At <u>{currentCompany.address}</u>  Possessing GST Identification No.<u>{currentCompany.gst}</u> Hereby declare and undertake as follows:
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          (1) Wehave disclosed all the facts relating to our Firm/Company to Uttar Gujarat Vij Company Limited,Address.GSTIN No.24AAACU6551F1ZI
-        </div>
-        
-        <div style={{ marginBottom: '15px' }}>
-          (2) We hereby declare that Wehave paid/agree to pay GST for The related invoices as per details below to the respective GST Authorities.
-        </div>
-        
-        <table style={{ width: '100%', borderCollapse: 'collapse', marginBottom: '15px', fontSize: '12px' }}>
-          <thead>
-            <tr>
-              <th style={{ ...tableCellStyle, width: '4%' }}>SI No.</th>
-              <th style={{ ...tableCellStyle, width: '18%' }}>Order No.</th>
-              <th style={{ ...tableCellStyle, width: '12%' }}>Order Date</th>
-              <th style={{ ...tableCellStyle, width: '12%' }}>Invoice No.</th>
-              <th style={{ ...tableCellStyle, width: '12%' }}>Invoice Date</th>
-              <th style={{ ...tableCellStyle, width: '12%' }}>Assessable Value( Rs.)</th>
-              <th style={{ ...tableCellStyle, width: '6%' }}>IGST (RS.)</th>
-              <th style={{ ...tableCellStyle, width: '12%' }}>CGST (Rs.)</th>
-              <th style={{ ...tableCellStyle, width: '12%' }}>SGST (Rs.)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style={tableCellStyle}>1</td>
-              <td style={{ ...tableCellStyle, padding: '4px' }}>
-                <textarea rows="2" className="bond-textarea" value={orderNo} onChange={(e) => setOrderNo(e.target.value)} />
-              </td>
-              <td style={{ ...tableCellStyle, padding: '4px' }}>
-                <input type="text" className="bond-input" value={orderDate} onChange={(e) => setOrderDate(e.target.value)} />
-              </td>
-              <td style={{ ...tableCellStyle, padding: '4px' }}>
-                <input type="text" className="bond-input" value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} />
-              </td>
-              <td style={{ ...tableCellStyle, padding: '4px' }}>
-                <input type="text" className="bond-input" value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
-              </td>
-              <td style={{ ...tableCellStyle, padding: '4px' }}>
+      <div className="overflow-x-auto w-full pb-6 print:p-0 print:overflow-visible">
+        <div className="bg-white p-8 sm:p-12 print:p-0 font-sans max-w-[800px] mx-auto shadow-md print:shadow-none border border-slate-200 print:border-none text-black leading-relaxed text-sm">
+          
+          <div className="text-center font-bold mb-5 underline text-base">INDEMNITY BOND CUM UNDERTAKING</div>
+          
+          <div>Uttar Gujarat Vij Company Limited</div>
+          <div>{(() => {
+            const match = selectedDivision.match(/-(\d+)$/);
+            return match ? `O&M Division -${match[1]}` : 'O&M Division';
+          })()}</div>
+          <div>{selectedDivision.split('-')[0] || selectedDivision}</div>
+          <div>GSTIN NO:24AAACU6551F1ZI</div>
+          <br />
+          <div><strong>Sub:</strong> Payment Of GST Amount and filing Of GST Return</div>
+          <br />
+          <div>Sir/Madam</div>
+          <div className="text-justify mb-4">
+            With reference to payment of GST amount and filing of GST Return for availing input Tax Credit (ITC) By you as per Eligibility Provisions for The Identified Invoices raised By Us, We, M/S. <u>{currentCompany.name}</u>  (the Firm/Company) Having Our Registered Office At <u>{currentCompany.address}</u>  Possessing GST Identification No.<u>{currentCompany.gst}</u> Hereby declare and undertake as follows:
+          </div>
+          
+          <div className="mb-4">
+            (1) Wehave disclosed all the facts relating to our Firm/Company to Uttar Gujarat Vij Company Limited,Address.GSTIN No.24AAACU6551F1ZI
+          </div>
+          
+          <div className="mb-4">
+            (2) We hereby declare that Wehave paid/agree to pay GST for The related invoices as per details below to the respective GST Authorities.
+          </div>
+          
+          <table className="w-full border-collapse mb-4 text-xs border border-black">
+            <thead>
+              <tr className="bg-slate-50 font-bold">
+                <th className="border border-black p-1.5 text-center w-[4%]">SI No.</th>
+                <th className="border border-black p-1.5 text-center w-[18%]">Order No.</th>
+                <th className="border border-black p-1.5 text-center w-[12%]">Order Date</th>
+                <th className="border border-black p-1.5 text-center w-[12%]">Invoice No.</th>
+                <th className="border border-black p-1.5 text-center w-[12%]">Invoice Date</th>
+                <th className="border border-black p-1.5 text-center w-[12%]">Assessable Value( Rs.)</th>
+                <th className="border border-black p-1.5 text-center w-[6%]">IGST (RS.)</th>
+                <th className="border border-black p-1.5 text-center w-[12%]">CGST (Rs.)</th>
+                <th className="border border-black p-1.5 text-center w-[12%]">SGST (Rs.)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-black p-1 text-center">1</td>
+                <td className="border border-black p-1">
+                  <textarea rows="2" className={bondTextareaClass} value={orderNo} onChange={(e) => setOrderNo(e.target.value)} />
+                </td>
+                <td className="border border-black p-1">
+                  <input type="text" className={bondInputClass} value={orderDate} onChange={(e) => setOrderDate(e.target.value)} />
+                </td>
+                <td className="border border-black p-1">
+                  <input type="text" className={bondInputClass} value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} />
+                </td>
+                <td className="border border-black p-1">
+                  <input type="text" className={bondInputClass} value={invoiceDate} onChange={(e) => setInvoiceDate(e.target.value)} />
+                </td>
+                <td className="border border-black p-1">
+                  <input 
+                    type="text" 
+                    className={bondInputClass} 
+                    value={assessableValue} 
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setAssessableValue(val);
+                      const numVal = parseFloat(val);
+                      if (!isNaN(numVal)) {
+                        const tax = (numVal * 0.09).toFixed(2);
+                        setCgst(tax);
+                        setSgst(tax);
+                      } else if (val === '') {
+                        setCgst('0');
+                        setSgst('0');
+                      }
+                    }} 
+                  />
+                </td>
+                <td className="border border-black p-1">
+                  <input type="text" className={bondInputClass} value={igst} onChange={(e) => setIgst(e.target.value)} />
+                </td>
+                <td className="border border-black p-1">
+                  <input type="text" className={bondInputClass} value={cgst} onChange={(e) => setCgst(e.target.value)} />
+                </td>
+                <td className="border border-black p-1">
+                  <input type="text" className={bondInputClass} value={sgst} onChange={(e) => setSgst(e.target.value)} />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          
+          <div className="text-justify mb-4">
+            InThis Connection,Wehereby agree and undertake to furnish to you proof of payment of GST (Self-attested GSTR-3B), which includes above mentioned GST Amount.
+          </div>
+          
+          <div className="text-justify mb-4">
+            (3) We hereby declare that we have filed/shall file GSTR-3B And GSTR-1 related to the above-mentioned invoices in time.Inthis connection. We hereby agree and undertake to furnish you proof of electronically filed GST Return to The authority.
+          </div>
+          
+          <div className="mb-2.5">(4)We hereby agree and undertake to indemnify as under:-</div>
+          <div className="ml-7 text-justify mb-2.5">
+            (i) The Firm/Company shall take all necessary safeguards to ensure availing of ITC on above mentioned invoices as per eligibility by Uttar Gujarat Vij Company Limited,Address,GSTIN NO.24AAACU6551F1ZI within the time limit provided in the GST provision.
+          </div>
+          <div className="ml-7 text-justify mb-4">
+            (ii) in case of any demand / rejection of ITC by the concerned tax Authority, for non-payment of GST amount by us or for any other reasons attributable to us, we hereby undertake and agree to indemnify Uttar Gujarat Vij Company Limited,Address, GSTIN No: 24AAACU6551F1ZI  in full against all consequences, liabilities of any kind whatsoever directly arising due to non-payment,of GST/non-filing of GST returns and / or such availment of ITC by you.
+          </div>
+          
+          <div className="mb-2.5">We hereby agree and confirm that-</div>
+          <div className="text-justify mb-2.5">
+            Any breach of the above indemnification or undertakings shall be construed as breach of the terms and conditions for reimbursement of GST and UGVCL shall be at liberty to take  such action against us including recovering of reimbursed GST amount from.
+          </div>
+          <div className="ml-7 mb-4 space-y-1">
+            <div>a) Security Deposit Paid for any of your supply/work , if any or</div>
+            <div>b) any of our Bank Guarantee executed in your favour, if any or</div>
+            <div>c)  other unpaid invoices, if any of us raised either at UGVCL or with GUVNL AND ITS Subsidiary Companies.</div>
+          </div>
+          
+          <div className="text-justify mb-12">
+            I/We Declare That I Am empowered to execute this indemnity Bond Cum Undertaking and the same is given under the orders of proper authority as per the delegation of power of the organization.
+          </div>
+          
+          <div className="flex justify-between items-start">
+            <div>
+              <div>Place:   CHANDISAR</div>
+              <div className="mt-14 flex items-center">
+                Date:-
                 <input 
                   type="text" 
-                  className="bond-input" 
-                  value={assessableValue} 
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setAssessableValue(val);
-                    const numVal = parseFloat(val);
-                    if (!isNaN(numVal)) {
-                      const tax = (numVal * 0.09).toFixed(2);
-                      setCgst(tax);
-                      setSgst(tax);
-                    } else if (val === '') {
-                      setCgst('0');
-                      setSgst('0');
-                    }
-                  }} 
+                  className={`${bondInputClass} w-28 ml-1.5 text-left`}
+                  value={documentDate} 
+                  onChange={(e) => setDocumentDate(e.target.value)} 
                 />
-              </td>
-              <td style={{ ...tableCellStyle, padding: '4px' }}>
-                <input type="text" className="bond-input" value={igst} onChange={(e) => setIgst(e.target.value)} />
-              </td>
-              <td style={{ ...tableCellStyle, padding: '4px' }}>
-                <input type="text" className="bond-input" value={cgst} onChange={(e) => setCgst(e.target.value)} />
-              </td>
-              <td style={{ ...tableCellStyle, padding: '4px' }}>
-                <input type="text" className="bond-input" value={sgst} onChange={(e) => setSgst(e.target.value)} />
-              </td>
-            </tr>
-          </tbody>
-        </table>
-        
-        <div style={{ textAlign: 'justify', marginBottom: '15px' }}>
-          InThis Connection,Wehereby agree and undertake to furnish to you proof of payment of GST (Self-attested GSTR-3B), which includes above mentioned GST Amount.
-        </div>
-        
-        <div style={{ textAlign: 'justify', marginBottom: '15px' }}>
-          (3) We hereby declare that we have filed/shall file GSTR-3B And GSTR-1 related to the above-mentioned invoices in time.Inthis connection. We hereby agree and undertake to furnish you proof of electronically filed GST Return to The authority.
-        </div>
-        
-        <div style={{ marginBottom: '10px' }}>(4)We hereby agree and undertake to indemnify as under:-</div>
-        <div style={{ marginLeft: '30px', textAlign: 'justify', marginBottom: '10px' }}>
-          (i) The Firm/Company shall take all necessary safeguards to ensure availing of ITC on above mentioned invoices as per eligibility by Uttar Gujarat Vij Company Limited,Address,GSTIN NO.24AAACU6551F1ZI within the time limit provided in the GST provision.
-        </div>
-        <div style={{ marginLeft: '30px', textAlign: 'justify', marginBottom: '15px' }}>
-          (ii) in case of any demand / rejection of ITC by the concerned tax Authority, for non-payment of GST amount by us or for any other reasons attributable to us, we hereby undertake and agree to indemnify Uttar Gujarat Vij Company Limited,Address, GSTIN No: 24AAACU6551F1ZI  in full against all consequences, liabilities of any kind whatsoever directly arising due to non-payment,of GST/non-filing of GST returns and / or such availment of ITC by you.
-        </div>
-        
-        <div style={{ marginBottom: '10px' }}>We hereby agree and confirm that-</div>
-        <div style={{ textAlign: 'justify', marginBottom: '10px' }}>
-          Any breach of the above indemnification or undertakings shall be construed as breach of the terms and conditions for reimbursement of GST and UGVCL shall be at liberty to take  such action against us including recovering of reimbursed GST amount from.
-        </div>
-        <div style={{ marginLeft: '30px', marginBottom: '15px' }}>
-          <div>a) Security Deposit Paid for any of your supply/work , if any or</div>
-          <div>b) any of our Bank Guarantee executed in your favour, if any or</div>
-          <div>c)  other unpaid invoices, if any of us raised either at UGVCL or with GUVNL AND ITS                                                  	Subsidiary Companies.</div>
-        </div>
-        
-        <div style={{ textAlign: 'justify', marginBottom: '50px' }}>
-          I/We Declare That I Am empowered to execute this indemnity Bond Cum Undertaking and the same is given under the orders of proper authority as per the delegation of power of the organization.
-        </div>
-        
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <div>
-            <div>Place:   CHANDISAR</div>
-            <div style={{ marginTop: '60px', display: 'flex', alignItems: 'center' }}>
-              Date:-
-              <input 
-                type="text" 
-                className="bond-input" 
-                value={documentDate} 
-                onChange={(e) => setDocumentDate(e.target.value)} 
-                style={{ width: '100px', marginLeft: '5px', textAlign: 'left' }}
-              />
+              </div>
+            </div>
+            <div>
+              <div className="text-center mb-5">
+                <div>Authorized  Signature of The</div>
+                <div>Indemnifier</div>
+              </div>
+              <div>Name:- {currentCompany.footerName}</div>
+              <div>Designation:- PROPRIETOR</div>
+              <div className="mt-2.5">Seal:-</div>
             </div>
           </div>
-          <div>
-            <div style={{ textAlign: 'center', marginBottom: '20px' }}>
-              <div>Authorized  Signature of The</div>
-              <div>Indemnifier</div>
-            </div>
-            <div>Name:- {currentCompany.footerName}</div>
-            <div>Designation:- PROPRIETOR</div>
-            <div style={{ marginTop: '10px' }}>Seal:-</div>
-          </div>
+          
         </div>
-        
       </div>
     </div>
   );
 }
-
-const tableCellStyle = {
-  border: '1px solid black',
-  padding: '6px',
-  textAlign: 'center',
-  wordBreak: 'normal'
-};

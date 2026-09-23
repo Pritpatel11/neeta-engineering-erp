@@ -155,56 +155,17 @@ export default function InventoryBalance() {
   const currentDivisionData = balances.find(b => b.divisionName === selectedDivision);
 
   return (
-    <div className="p-6">
-      <style>
-        {`
-          @media screen {
-            .print-only, .print-only-flex { display: none !important; }
-          }
-          @media print {
-            .print-only { display: block !important; min-height: 90px !important; margin-bottom: 5px !important; }
-            .print-only-flex { display: flex !important; }
-            .print-only img.print-logo { height: 80px !important; top: 0 !important; }
-            body * {
-              visibility: hidden;
-            }
-            #printable-area, #printable-area * {
-              visibility: visible;
-            }
-            #printable-area {
-              position: absolute;
-              left: 0;
-              top: 0;
-              width: 100%;
-            }
-            .glass-card { 
-              box-shadow: none !important; 
-              background: transparent !important; 
-              margin: 0 !important; 
-              padding: 0 !important; 
-              border: none !important; 
-            }
-            table { width: 100% !important; border-collapse: collapse; page-break-inside: avoid; }
-            tr { page-break-inside: avoid; page-break-after: auto; }
-            td { padding: 4px 8px !important; font-size: 12px !important; }
-            th { padding: 6px 8px !important; font-size: 14px !important; }
-            .signature-block img { height: 60px !important; }
-            .signature-block div { font-size: 11px !important; margin-bottom: 2px !important; }
-            @page { size: A4 portrait; margin: 8mm; }
-          }
-        `}
-      </style>
-      <div className="flex justify-between items-center mb-6 no-print">
+    <div className="p-4 sm:p-6 print:p-0 print:bg-white">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 print:hidden">
         <div>
-          <h1 className="text-2xl font-bold">Fabrication Material Balance</h1>
-          <p className="text-gray-500">Track and update stock balances for each division.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-800">Fabrication Material Balance</h1>
+          <p className="text-sm text-slate-500">Track and update stock balances for each division.</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex flex-wrap items-center gap-2.5">
           <select 
-            className="form-control" 
+            className="bg-white border border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-800 font-medium focus:outline-none focus:ring-1 focus:ring-[#0059bb] w-full sm:w-auto" 
             value={selectedDivision} 
             onChange={handleDivisionChange}
-            style={{ padding: '8px', borderRadius: '4px', border: '1px solid #ccc' }}
             disabled={isEditing}
           >
             {divisions.map(div => (
@@ -213,86 +174,104 @@ export default function InventoryBalance() {
           </select>
           {isEditing ? (
             <>
-              <button onClick={saveBalances} className="btn-primary flex items-center gap-2" style={{ backgroundColor: '#28a745' }}>
-                <Save size={18} /> Save Balances
+              <button 
+                onClick={saveBalances} 
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+              >
+                <Save size={16} /> <span>Save Balances</span>
               </button>
-              <button onClick={() => setIsEditing(false)} className="btn-secondary flex items-center gap-2" style={{ backgroundColor: '#6c757d', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none' }}>
-                <X size={18} /> Cancel
+              <button 
+                onClick={() => setIsEditing(false)} 
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+              >
+                <X size={16} /> <span>Cancel</span>
               </button>
             </>
           ) : (
             <>
-              <button onClick={handleEditBalances} className="btn-primary flex items-center gap-2" style={{ backgroundColor: '#007bff' }}>
-                <Edit size={18} /> Edit Balances
+              <button 
+                onClick={handleEditBalances} 
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-[#0059bb] hover:bg-[#004899] text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+              >
+                <Edit size={16} /> <span>Edit</span>
               </button>
-              <button onClick={syncBalance} disabled={isSyncing} className="btn-primary flex items-center gap-2" style={{ backgroundColor: '#28a745' }}>
-                <RefreshCw size={18} className={isSyncing ? "animate-spin" : ""} /> {isSyncing ? 'Syncing...' : 'Sync Balance from Registers'}
+              <button 
+                onClick={syncBalance} 
+                disabled={isSyncing} 
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+              >
+                <RefreshCw size={16} className={isSyncing ? "animate-spin" : ""} /> <span>{isSyncing ? 'Syncing...' : 'Sync Registers'}</span>
               </button>
-              <button onClick={handlePrint} className="btn-primary flex items-center gap-2" style={{ backgroundColor: '#4b5563' }}>
-                <Printer size={18} /> Print
+              <button 
+                onClick={handlePrint} 
+                className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-slate-700 hover:bg-slate-800 text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer"
+              >
+                <Printer size={16} /> <span>Print</span>
               </button>
             </>
           )}
         </div>
       </div>
 
-      <div id="printable-area" className="glass-card mt-6" style={{ background: 'white', borderRadius: '8px', padding: '20px', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-        <div className="print-only" style={{ textAlign: 'center', position: 'relative', minHeight: '140px', paddingTop: '10px' }}>
-          <img src="./logo address.png" alt="Neeta Engineering Works Logo" className="print-logo" style={{ position: 'absolute', left: '20px', top: '10px', height: '130px', objectFit: 'contain' }} />
+      <div id="printable-area" className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-6 shadow-sm print:shadow-none print:border-none print:p-0 print:m-0">
+        <div className="hidden print:block text-center relative min-h-[100px] mb-3">
+          <img src="/logo address.png" alt="Neeta Engineering Works Logo" className="h-20 object-contain mx-auto" />
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', border: '2px solid black' }}>
-          <thead>
-            <tr>
-              <th colSpan="2" style={{ border: '2px solid black', padding: '12px', textAlign: 'center', background: '#f8f9fa', fontSize: '18px' }}>
-                Fabrication material balance Date :- {new Date().toLocaleDateString('en-IN')}
-                <br/>
-                <span style={{ fontSize: '14px', color: 'blue' }}>Division: {selectedDivision}</span>
-              </th>
-            </tr>
-            <tr>
-              <th style={{ border: '2px solid black', padding: '12px', textAlign: 'left', width: '70%' }}>Material Description</th>
-              <th style={{ border: '2px solid black', padding: '12px', textAlign: 'right', width: '30%' }}>Balance (Nos)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {materials.map((item, index) => {
-              const mat = currentDivisionData?.materials?.find(m => m.name === item);
-              const qty = mat ? mat.qty : 0;
-              
-              return (
-                <tr key={index}>
-                  <td style={{ border: '1px solid black', borderLeft: '2px solid black', padding: '8px 12px', fontWeight: '500', fontSize: '14px' }}>
-                    {item}
-                  </td>
-                  <td style={{ border: '1px solid black', borderRight: '2px solid black', padding: '8px 12px', textAlign: 'right' }}>
-                    {isEditing ? (
-                      <input 
-                        type="number" 
-                        value={manualBalances[item] !== undefined ? manualBalances[item] : qty}
-                        onChange={(e) => setManualBalances({...manualBalances, [item]: e.target.value})}
-                        style={{ width: '100px', textAlign: 'right', padding: '4px', border: '1px solid #ccc', borderRadius: '4px' }}
-                      />
-                    ) : (
-                      <span style={{ fontWeight: 'bold', color: qty < 0 ? 'red' : 'inherit' }}>{qty}</span>
-                    )}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="overflow-x-auto w-full">
+          <table className="w-full border-collapse border-2 border-black text-black">
+            <thead>
+              <tr>
+                <th colSpan="2" className="border-2 border-black p-3 text-center bg-slate-50 text-base sm:text-lg font-bold">
+                  Fabrication material balance Date :- {new Date().toLocaleDateString('en-IN')}
+                  <br/>
+                  <span className="text-sm font-semibold text-[#0059bb]">Division: {selectedDivision}</span>
+                </th>
+              </tr>
+              <tr>
+                <th className="border-2 border-black p-3 text-left w-[70%] font-bold text-sm sm:text-base">Material Description</th>
+                <th className="border-2 border-black p-3 text-right w-[30%] font-bold text-sm sm:text-base">Balance (Nos)</th>
+              </tr>
+            </thead>
+            <tbody>
+              {materials.map((item, index) => {
+                const mat = currentDivisionData?.materials?.find(m => m.name === item);
+                const qty = mat ? mat.qty : 0;
+                
+                return (
+                  <tr key={index} className="hover:bg-slate-50/50">
+                    <td className="border border-black border-l-2 border-l-black px-3 py-2 font-medium text-xs sm:text-sm">
+                      {item}
+                    </td>
+                    <td className="border border-black border-r-2 border-r-black px-3 py-2 text-right text-xs sm:text-sm">
+                      {isEditing ? (
+                        <input 
+                          type="number" 
+                          value={manualBalances[item] !== undefined ? manualBalances[item] : qty}
+                          onChange={(e) => setManualBalances({...manualBalances, [item]: e.target.value})}
+                          className="w-24 text-right px-2 py-1 text-xs border border-slate-300 rounded focus:outline-none focus:ring-1 focus:ring-[#0059bb]"
+                        />
+                      ) : (
+                        <span className={`font-mono font-bold ${qty < 0 ? 'text-red-600' : 'text-slate-900'}`}>{qty}</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
         
         {/* Signature Block */}
-        <div className="print-only-flex" style={{ justifyContent: 'flex-end', marginTop: '10px', paddingRight: '40px', paddingBottom: '0' }}>
-          <div className="signature-block" style={{ width: '250px', textAlign: 'center' }}>
-            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '5px' }}>
-              <img src="./sign.png" alt="Signature" style={{ height: '100px', objectFit: 'contain' }} />
+        <div className="hidden print:flex justify-end mt-8 pr-8">
+          <div className="w-60 text-center flex flex-col items-center">
+            <div className="flex justify-center mb-1">
+              <img src="/sign.png" alt="Signature" className="h-16 object-contain" />
             </div>
-            <div style={{ marginBottom: '8px', fontSize: '1rem', color: '#000' }}>
+            <div className="mb-1 text-sm tracking-widest text-slate-600">
               ...........................................
             </div>
-            <div style={{ fontSize: '0.875rem', fontWeight: '600', color: '#000' }}>Authorized Signatory</div>
-            <div style={{ fontSize: '0.75rem', color: '#555', marginTop: '4px' }}>For Neeta Engineering Works</div>
+            <div className="text-xs font-bold text-black uppercase">Authorized Signatory</div>
+            <div className="text-[11px] text-slate-600 mt-0.5">For Neeta Engineering Works</div>
           </div>
         </div>
       </div>

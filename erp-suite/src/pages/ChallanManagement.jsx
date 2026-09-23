@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Eye, Trash2, FileText, Search, Edit, Edit2, X } from 'lucide-react';
 import { getChallans, deleteChallan, updateChallan, getRemainingMaterials, deleteRemainingMaterial as deleteRemainingMaterialAPI, getMaterials } from '../services/api';
+import { Modal, TableWrapper, Button } from '../components/ui';
 
 export default function ChallanManagement() {
   const [activeTab, setActiveTab] = useState('challans');
@@ -170,80 +171,78 @@ export default function ChallanManagement() {
   const totalPages = Math.ceil(activeRecords.length / recordsPerPage);
 
   return (
-    <div className="dashboard-container" style={{ paddingBottom: '40px' }}>
-      <div className="dashboard-header">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6 pb-12">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
         <div>
-          <h1 className="dashboard-title">Challan & Billing Management</h1>
-          <p className="dashboard-subtitle">Manage, view, and print generated delivery challans.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">Challan & Billing Management</h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">Manage, view, and print generated delivery challans.</p>
         </div>
-        <div className="dashboard-actions">
-          <button className="btn-primary" onClick={() => navigate('/create-challan')}>
+        <div className="flex items-center gap-3">
+          <button 
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#0059bb] hover:bg-[#004899] text-white text-sm font-semibold transition-colors cursor-pointer shadow-xs" 
+            onClick={() => navigate('/create-challan')}
+          >
             <Plus size={18} /> New Challan
           </button>
         </div>
       </div>
 
-      <div className="glass-card" style={{ padding: '24px' }}>
-        <div className="section-header-flex" style={{ borderBottom: 'none', marginBottom: '16px' }}>
-          <h2 className="section-title mb-0 border-0" style={{ padding: 0 }}>
-            <FileText className="text-primary" size={20} />
+      <div className="bg-white border border-slate-200 rounded-2xl shadow-xs p-4 sm:p-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+          <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
+            <FileText className="text-[#0059bb]" size={22} />
             Saved Challans
           </h2>
           
-          <div style={{ position: 'relative' }}>
-            <Search size={18} className="text-muted" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-            <input 
-              type="text" 
-              placeholder="Search challans..." 
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="form-control"
-              style={{ paddingLeft: '36px', width: '250px', background: 'var(--color-surface)' }}
-            />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: '#8392a5' }}>From:</span>
-            <input 
-              type="date" 
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className="form-control"
-              style={{ width: '130px' }}
-            />
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ fontSize: '12px', fontWeight: '600', color: '#8392a5' }}>To:</span>
-            <input 
-              type="date" 
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="form-control"
-              style={{ width: '130px' }}
-            />
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 min-w-[200px]">
+              <Search size={18} className="text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input 
+                type="text" 
+                placeholder="Search challans..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-9 pr-3.5 py-2 text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500">From:</span>
+              <input 
+                type="date" 
+                value={fromDate}
+                onChange={(e) => setFromDate(e.target.value)}
+                className="px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all w-36"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-slate-500">To:</span>
+              <input 
+                type="date" 
+                value={toDate}
+                onChange={(e) => setToDate(e.target.value)}
+                className="px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-200 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all w-36"
+              />
+            </div>
           </div>
         </div>
 
-        <div className="tab-navigation" style={{ display: 'flex', gap: '16px', marginBottom: '24px', borderBottom: '1px solid var(--color-outline-variant)' }}>
+        <div className="flex gap-2 border-b border-slate-200 mb-6">
           <button 
-            className="btn-link" 
-            style={{ 
-              padding: '12px 24px', 
-              color: activeTab === 'challans' ? 'var(--color-primary)' : 'var(--color-on-surface-variant)',
-              borderBottom: activeTab === 'challans' ? '3px solid var(--color-primary)' : '3px solid transparent',
-              textDecoration: 'none'
-            }}
+            className={`px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors cursor-pointer ${
+              activeTab === 'challans' 
+                ? 'text-[#0059bb] border-[#0059bb]' 
+                : 'text-slate-500 hover:text-slate-800 border-transparent'
+            }`}
             onClick={() => setActiveTab('challans')}
           >
             Delivery Challans
           </button>
           <button 
-            className="btn-link" 
-            style={{ 
-              padding: '12px 24px', 
-              color: activeTab === 'remaining' ? 'var(--color-primary)' : 'var(--color-on-surface-variant)',
-              borderBottom: activeTab === 'remaining' ? '3px solid var(--color-primary)' : '3px solid transparent',
-              textDecoration: 'none'
-            }}
+            className={`px-4 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors cursor-pointer ${
+              activeTab === 'remaining' 
+                ? 'text-[#0059bb] border-[#0059bb]' 
+                : 'text-slate-500 hover:text-slate-800 border-transparent'
+            }`}
             onClick={() => setActiveTab('remaining')}
           >
             Pending Materials
@@ -251,23 +250,23 @@ export default function ChallanManagement() {
         </div>
 
         {activeTab === 'challans' && (
-          <div className="table-responsive">
-            <table className="data-table">
+          <TableWrapper minWidth="750px">
+            <table className="w-full text-xs sm:text-sm text-left border-collapse">
               <thead>
-                <tr>
-                  <th>Challan No.</th>
-                  <th>Date</th>
-                  <th>Contractor</th>
-                  <th>Vehicle No.</th>
-                  <th className="text-right">Total Items</th>
-                  <th>Status</th>
-                  <th className="text-right">Actions</th>
+                <tr className="border-b border-slate-200 bg-slate-50/80">
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Challan No.</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Date</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Contractor</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Vehicle No.</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider text-right">Total Items</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Status</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {filteredChallans.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="text-center text-muted" style={{ padding: '32px' }}>
+                    <td colSpan="7" className="text-center py-12 text-slate-500">
                       {challans.length === 0 
                         ? 'No challans found. Create your first delivery challan!' 
                         : 'No challans match your search.'}
@@ -275,50 +274,50 @@ export default function ChallanManagement() {
                   </tr>
                 ) : (
                   currentRecords.map((challan, idx) => (
-                    <tr key={challan.challanNo + idx} className={idx % 2 === 1 ? 'bg-alt' : ''}>
-                      <td className="font-mono text-primary font-medium">{challan.challanNo}</td>
-                      <td>{challan.date}</td>
-                      <td>{challan.contractorName}</td>
-                      <td>{challan.vehicleNumber}</td>
-                      <td className="text-right font-mono">
+                    <tr key={challan.challanNo + idx} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-4 py-3 font-mono text-[#0059bb] font-semibold">{challan.challanNo}</td>
+                      <td className="px-4 py-3 text-slate-600">{challan.date}</td>
+                      <td className="px-4 py-3 font-medium text-slate-900">{challan.contractorName}</td>
+                      <td className="px-4 py-3 text-slate-600">{challan.vehicleNumber}</td>
+                      <td className="px-4 py-3 text-right font-mono font-medium text-slate-700">
                         {challan.materials?.reduce((sum, m) => sum + m.qty, 0) || 0} units
                       </td>
-                      <td>
+                      <td className="px-4 py-3">
                         <select
-                          className={`badge ${challan.status === 'Pending' ? 'badge-warning' : 'badge-secondary'}`}
+                          className={`text-xs font-semibold px-2.5 py-1 rounded-full border cursor-pointer outline-none transition-colors ${
+                            challan.status === 'Pending' 
+                              ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' 
+                              : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                          }`}
                           value={challan.status || 'Dispatched'}
                           onChange={(e) => handleStatusChange(challan._id, e.target.value)}
-                          style={{ border: 'none', cursor: 'pointer', outline: 'none' }}
                         >
-                          <option value="Dispatched" style={{background: 'var(--color-surface)', color: 'var(--color-on-surface)'}}>Dispatched</option>
-                          <option value="Pending" style={{background: 'var(--color-surface)', color: 'var(--color-on-surface)'}}>Pending</option>
+                          <option value="Dispatched">Dispatched</option>
+                          <option value="Pending">Pending</option>
                         </select>
                       </td>
-                      <td className="text-right">
-                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex gap-1.5 justify-end">
                           <button 
-                            className="action-icon text-primary" 
+                            className="p-1.5 text-[#0059bb] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer" 
                             onClick={() => handleEditClick(challan)}
                             title="Edit"
-                            style={{ background: 'none', border: 'none' }}
                           >
-                            <Edit2 size={18} />
+                            <Edit2 size={16} />
                           </button>
                           <button 
-                            className="action-icon" 
+                            className="p-1.5 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" 
                             onClick={() => handleView(challan)}
                             title="View & Print"
-                            style={{ background: 'none', border: 'none' }}
                           >
-                            <Eye size={18} />
+                            <Eye size={16} />
                           </button>
                           <button 
-                            className="action-icon text-error" 
+                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" 
                             onClick={() => actualDelete(challan._id, challan.challanNo)}
                             title="Delete"
-                            style={{ background: 'none', border: 'none' }}
                           >
-                            <Trash2 size={18} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
@@ -327,26 +326,26 @@ export default function ChallanManagement() {
                 )}
               </tbody>
             </table>
-          </div>
+          </TableWrapper>
         )}
 
         {activeTab === 'remaining' && (
-          <div className="table-responsive">
-            <table className="data-table">
+          <TableWrapper minWidth="750px">
+            <table className="w-full text-xs sm:text-sm text-left border-collapse">
               <thead>
-                <tr>
-                  <th>Original Challan No.</th>
-                  <th>Date Recorded</th>
-                  <th>Contractor</th>
-                  <th>Division</th>
-                  <th className="text-right">Pending Items (Qty)</th>
-                  <th className="text-right">Actions</th>
+                <tr className="border-b border-slate-200 bg-slate-50/80">
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Original Challan No.</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Date Recorded</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Contractor</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Division</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider text-right">Pending Items (Qty)</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {filteredRemaining.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="text-center text-muted" style={{ padding: '32px' }}>
+                    <td colSpan="6" className="text-center py-12 text-slate-500">
                       {remainingMaterials.length === 0 
                         ? 'No pending materials recorded.' 
                         : 'No records match your search.'}
@@ -354,35 +353,33 @@ export default function ChallanManagement() {
                   </tr>
                 ) : (
                   currentRecords.map((record, idx) => (
-                    <tr key={record._id} className={idx % 2 === 1 ? 'bg-alt' : ''}>
-                      <td className="font-mono text-tertiary font-medium">{record.originalChallanNo}</td>
-                      <td>{record.date}</td>
-                      <td>{record.contractorName}</td>
-                      <td>{record.divisionName || '-'}</td>
-                      <td className="text-right">
+                    <tr key={record._id} className="hover:bg-slate-50/80 transition-colors">
+                      <td className="px-4 py-3 font-mono text-[#0059bb] font-semibold">{record.originalChallanNo}</td>
+                      <td className="px-4 py-3 text-slate-600">{record.date}</td>
+                      <td className="px-4 py-3 font-medium text-slate-900">{record.contractorName}</td>
+                      <td className="px-4 py-3 text-slate-600">{record.divisionName || '-'}</td>
+                      <td className="px-4 py-3 text-right">
                         {record.materials?.map((m, i) => (
-                          <div key={i} style={{ fontSize: '12px', marginBottom: '2px' }}>
-                            {m.name} <span className="font-mono text-tertiary">({m.qty} {m.unit})</span>
+                          <div key={i} className="text-xs text-slate-700">
+                            {m.name} <span className="font-mono text-slate-500">({m.qty} {m.unit})</span>
                           </div>
                         ))}
                       </td>
-                      <td className="text-right">
-                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex gap-1.5 justify-end">
                           <button 
-                            className="action-icon text-primary" 
+                            className="p-1.5 text-[#0059bb] hover:bg-blue-50 rounded-lg transition-colors cursor-pointer" 
                             onClick={() => handleEditPending(record)}
                             title="Edit"
-                            style={{ background: 'none', border: 'none' }}
                           >
-                            <Edit size={18} />
+                            <Edit size={16} />
                           </button>
                           <button 
-                            className="action-icon text-error" 
+                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" 
                             onClick={() => deleteRemainingMaterial(record._id)}
                             title="Delete"
-                            style={{ background: 'none', border: 'none' }}
                           >
-                            <Trash2 size={18} />
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
@@ -391,26 +388,26 @@ export default function ChallanManagement() {
                 )}
               </tbody>
             </table>
-          </div>
+          </TableWrapper>
         )}
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginTop: '20px' }}>
+          <div className="flex items-center justify-center gap-3 mt-6 pt-4 border-t border-slate-100">
             <button 
               onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
               disabled={currentPage === 1}
-              style={{ padding: '8px 16px', border: '1px solid #ccc', background: currentPage === 1 ? '#f8f9fa' : 'white', borderRadius: '4px', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', color: currentPage === 1 ? '#adb5bd' : '#495057' }}
+              className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-xs sm:text-sm font-medium transition-colors cursor-pointer"
             >
               Previous
             </button>
-            <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#495057' }}>
+            <span className="text-xs sm:text-sm font-semibold text-slate-600">
               Page {currentPage} of {totalPages}
             </span>
             <button 
               onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
               disabled={currentPage === totalPages}
-              style={{ padding: '8px 16px', border: '1px solid #ccc', background: currentPage === totalPages ? '#f8f9fa' : 'white', borderRadius: '4px', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', color: currentPage === totalPages ? '#adb5bd' : '#495057' }}
+              className="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed text-xs sm:text-sm font-medium transition-colors cursor-pointer"
             >
               Next
             </button>
@@ -419,182 +416,171 @@ export default function ChallanManagement() {
       </div>
 
       {/* Edit Challan Modal */}
-      {editingChallan && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)', display: 'flex',
-          alignItems: 'center', justifyContent: 'center', zIndex: 1000
-        }}>
-          <div style={{
-            background: 'white', padding: '24px', borderRadius: '12px',
-            width: '450px', maxHeight: '90vh', overflowY: 'auto', boxShadow: '0 10px 25px rgba(0,0,0,0.2)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', color: 'var(--color-on-surface)' }}>Edit Challan Details</h3>
-              <X size={20} style={{ cursor: 'pointer', color: '#666' }} onClick={() => setEditingChallan(null)} />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Challan No.</label>
-                <input
-                  type="text"
-                  value={editFormData.challanNo}
-                  onChange={e => setEditFormData({ ...editFormData, challanNo: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Date</label>
-                <input
-                  type="text"
-                  placeholder="dd/mm/yyyy"
-                  value={editFormData.date}
-                  onChange={e => setEditFormData({ ...editFormData, date: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '12px' }}>
-              <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Contractor Name</label>
+      <Modal 
+        isOpen={Boolean(editingChallan)} 
+        onClose={() => setEditingChallan(null)} 
+        title="Edit Challan Details"
+        size="md"
+      >
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Challan No.</label>
               <input
                 type="text"
-                value={editFormData.contractorName}
-                onChange={e => setEditFormData({ ...editFormData, contractorName: e.target.value })}
-                style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
+                value={editFormData.challanNo}
+                onChange={e => setEditFormData({ ...editFormData, challanNo: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded-lg text-sm"
               />
             </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Vehicle No.</label>
-                <input
-                  type="text"
-                  value={editFormData.vehicleNumber}
-                  onChange={e => setEditFormData({ ...editFormData, vehicleNumber: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Driver Name</label>
-                <input
-                  type="text"
-                  value={editFormData.driverName}
-                  onChange={e => setEditFormData({ ...editFormData, driverName: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Gate Pass No.</label>
-                <input
-                  type="text"
-                  value={editFormData.gatePassNo}
-                  onChange={e => setEditFormData({ ...editFormData, gatePassNo: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Gate Pass Date</label>
-                <input
-                  type="text"
-                  placeholder="dd/mm/yyyy"
-                  value={editFormData.gatePassDate || ''}
-                  onChange={e => setEditFormData({ ...editFormData, gatePassDate: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Division</label>
-                <input
-                  type="text"
-                  value={editFormData.divisionName}
-                  onChange={e => setEditFormData({ ...editFormData, divisionName: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
-                />
-              </div>
-              <div>
-                <label style={{ display: 'block', fontSize: '13px', marginBottom: '4px', color: '#555' }}>Sub-Division</label>
-                <input
-                  type="text"
-                  value={editFormData.subDivisionName}
-                  onChange={e => setEditFormData({ ...editFormData, subDivisionName: e.target.value })}
-                  style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '6px' }}
-                />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: '24px', maxHeight: '200px', overflowY: 'auto', border: '1px solid #eee', padding: '12px', borderRadius: '6px', background: '#fafafa' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <h4 style={{ margin: 0, fontSize: '14px', color: '#333' }}>Edit Materials Qty</h4>
-                <select 
-                  onChange={(e) => {
-                    const newMat = e.target.value;
-                    if (newMat && !editFormData.materials?.[newMat]) {
-                      setEditFormData({
-                        ...editFormData,
-                        materials: { ...editFormData.materials, [newMat]: 0 }
-                      });
-                    }
-                    e.target.value = ""; // reset
-                  }}
-                  style={{ padding: '4px', borderRadius: '4px', border: '1px solid #ccc', fontSize: '12px', maxWidth: '150px' }}
-                >
-                  <option value="">+ Add Material</option>
-                  {materialsList.filter(m => !editFormData.materials?.[m]).map(mat => (
-                    <option key={mat} value={mat}>{mat}</option>
-                  ))}
-                </select>
-              </div>
-
-              {Object.keys(editFormData.materials || {}).map(matName => (
-                <div key={matName} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                  <label style={{ fontSize: '13px', flex: 1, paddingRight: '10px', color: '#444' }}>{matName}</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editFormData.materials?.[matName] !== undefined ? editFormData.materials[matName] : ''}
-                    onChange={e => setEditFormData({
-                      ...editFormData,
-                      materials: {
-                        ...editFormData.materials,
-                        [matName]: e.target.value ? parseInt(e.target.value) : 0
-                      }
-                    })}
-                    style={{ width: '70px', padding: '6px', textAlign: 'right', border: '1px solid #ccc', borderRadius: '4px' }}
-                  />
-                </div>
-              ))}
-              {Object.keys(editFormData.materials || {}).length === 0 && (
-                <div style={{ fontSize: '13px', color: '#888' }}>No materials recorded.</div>
-              )}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-              <button 
-                onClick={() => setEditingChallan(null)} 
-                className="btn-outline"
-                style={{ padding: '8px 16px', borderRadius: '6px' }}
-              >
-                Cancel
-              </button>
-              <button 
-                onClick={handleSaveEdit} 
-                className="btn-primary"
-                style={{ padding: '8px 16px', borderRadius: '6px' }}
-              >
-                Save Changes
-              </button>
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Date</label>
+              <input
+                type="text"
+                placeholder="dd/mm/yyyy"
+                value={editFormData.date}
+                onChange={e => setEditFormData({ ...editFormData, date: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded-lg text-sm"
+              />
             </div>
           </div>
+
+          <div>
+            <label className="block text-xs font-medium text-slate-700 mb-1">Contractor Name</label>
+            <input
+              type="text"
+              value={editFormData.contractorName}
+              onChange={e => setEditFormData({ ...editFormData, contractorName: e.target.value })}
+              className="w-full p-2 border border-slate-200 rounded-lg text-sm"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Vehicle No.</label>
+              <input
+                type="text"
+                value={editFormData.vehicleNumber}
+                onChange={e => setEditFormData({ ...editFormData, vehicleNumber: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Driver Name</label>
+              <input
+                type="text"
+                value={editFormData.driverName}
+                onChange={e => setEditFormData({ ...editFormData, driverName: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded-lg text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Gate Pass No.</label>
+              <input
+                type="text"
+                value={editFormData.gatePassNo}
+                onChange={e => setEditFormData({ ...editFormData, gatePassNo: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Gate Pass Date</label>
+              <input
+                type="text"
+                placeholder="dd/mm/yyyy"
+                value={editFormData.gatePassDate || ''}
+                onChange={e => setEditFormData({ ...editFormData, gatePassDate: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded-lg text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Division</label>
+              <input
+                type="text"
+                value={editFormData.divisionName}
+                onChange={e => setEditFormData({ ...editFormData, divisionName: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded-lg text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-slate-700 mb-1">Sub-Division</label>
+              <input
+                type="text"
+                value={editFormData.subDivisionName}
+                onChange={e => setEditFormData({ ...editFormData, subDivisionName: e.target.value })}
+                className="w-full p-2 border border-slate-200 rounded-lg text-sm"
+              />
+            </div>
+          </div>
+
+          <div className="max-h-48 overflow-y-auto border border-slate-200 p-3 rounded-lg bg-slate-50">
+            <div className="flex justify-between items-center mb-3">
+              <h4 className="text-xs font-semibold text-slate-700 m-0">Edit Materials Qty</h4>
+              <select 
+                onChange={(e) => {
+                  const newMat = e.target.value;
+                  if (newMat && !editFormData.materials?.[newMat]) {
+                    setEditFormData({
+                      ...editFormData,
+                      materials: { ...editFormData.materials, [newMat]: 0 }
+                    });
+                  }
+                  e.target.value = "";
+                }}
+                className="p-1 border border-slate-200 rounded text-xs max-w-[150px] bg-white"
+              >
+                <option value="">+ Add Material</option>
+                {materialsList.filter(m => !editFormData.materials?.[m]).map(mat => (
+                  <option key={mat} value={mat}>{mat}</option>
+                ))}
+              </select>
+            </div>
+
+            {Object.keys(editFormData.materials || {}).map(matName => (
+              <div key={matName} className="flex justify-between items-center mb-2">
+                <label className="text-xs flex-1 pr-2 text-slate-600 truncate" title={matName}>{matName}</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editFormData.materials?.[matName] !== undefined ? editFormData.materials[matName] : ''}
+                  onChange={e => setEditFormData({
+                    ...editFormData,
+                    materials: {
+                      ...editFormData.materials,
+                      [matName]: e.target.value ? parseInt(e.target.value) : 0
+                    }
+                  })}
+                  className="w-20 p-1 text-right border border-slate-200 rounded text-xs bg-white font-mono"
+                />
+              </div>
+            ))}
+            {Object.keys(editFormData.materials || {}).length === 0 && (
+              <div className="text-xs text-slate-400 italic">No materials recorded.</div>
+            )}
+          </div>
+
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
+            <button 
+              onClick={() => setEditingChallan(null)} 
+              className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 text-xs sm:text-sm font-medium transition-colors cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button 
+              onClick={handleSaveEdit} 
+              className="px-4 py-2 rounded-xl bg-[#0059bb] hover:bg-[#004899] text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer shadow-xs"
+            >
+              Save Changes
+            </button>
+          </div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

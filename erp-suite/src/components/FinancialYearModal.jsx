@@ -47,34 +47,34 @@ const FinancialYearModal = ({ onSelectYear }) => {
 
   if (loading) {
     return (
-      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}>
-        <div style={{ backgroundColor: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div style={{ border: '4px solid #f3f3f3', borderTop: '4px solid #4f46e5', borderRadius: '50%', width: '40px', height: '40px', animation: 'spin 1s linear infinite', marginBottom: '15px' }} />
-          <p style={{ color: '#4b5563', fontWeight: 500 }}>Loading Financial Years...</p>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs">
+        <div className="bg-white p-8 rounded-2xl border border-slate-200 shadow-xl flex flex-col items-center gap-3">
+          <div className="animate-spin rounded-full h-10 w-10 border-3 border-slate-200 border-t-[#0059bb]" />
+          <p className="text-sm font-semibold text-slate-600">Loading Financial Years...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)', padding: '20px' }}>
-      <div style={{ backgroundColor: '#fff', borderRadius: '16px', boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)', width: '100%', maxWidth: '400px', overflow: 'hidden' }}>
-        <div style={{ background: 'linear-gradient(to right, #4f46e5, #9333ea)', padding: '24px', textAlign: 'center' }}>
-          <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#fff', margin: '0 0 8px 0' }}>Select Financial Year</h2>
-          <p style={{ color: '#e0e7ff', fontSize: '14px', margin: 0 }}>Please select the operating year to continue</p>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-150">
+        <div className="bg-linear-to-r from-[#004899] to-[#0059bb] px-6 py-6 text-center text-white">
+          <h2 className="text-xl font-bold tracking-tight text-white">Select Financial Year</h2>
+          <p className="text-blue-100 text-xs mt-1">Choose the operating financial year to proceed</p>
         </div>
         
-        <form onSubmit={handleSelect} style={{ padding: '32px' }}>
-          <div style={{ marginBottom: '24px' }}>
-            <label style={{ display: 'block', color: '#374151', fontSize: '14px', fontWeight: 'bold', marginBottom: '12px' }} htmlFor="yearSelect">
-              Financial Year
+        <form onSubmit={handleSelect} className="p-6 space-y-5">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2" htmlFor="yearSelect">
+              Operating Year
             </label>
-            <div style={{ position: 'relative' }}>
+            <div className="relative">
               <select
                 id="yearSelect"
                 value={selectedYear}
                 onChange={(e) => setSelectedYear(e.target.value)}
-                style={{ appearance: 'none', width: '100%', backgroundColor: '#f9fafb', border: '1px solid #d1d5db', color: '#111827', padding: '12px 16px', paddingRight: '40px', borderRadius: '8px', fontSize: '18px', fontWeight: 500, outline: 'none', cursor: 'pointer' }}
+                className="w-full appearance-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pr-10 text-base font-semibold text-slate-900 focus:bg-white focus:border-[#0059bb] focus:ring-2 focus:ring-[#0059bb]/20 focus:outline-none transition-all cursor-pointer"
                 required
               >
                 {years.map((y) => (
@@ -83,8 +83,8 @@ const FinancialYearModal = ({ onSelectYear }) => {
                   </option>
                 ))}
               </select>
-              <div style={{ pointerEvents: 'none', position: 'absolute', top: 0, bottom: 0, right: 0, display: 'flex', alignItems: 'center', padding: '0 16px', color: '#4b5563' }}>
-                <svg style={{ fill: 'currentColor', height: '20px', width: '20px' }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3.5 text-slate-400">
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 20 20">
                   <path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/>
                 </svg>
               </div>
@@ -94,7 +94,7 @@ const FinancialYearModal = ({ onSelectYear }) => {
           <button
             type="submit"
             disabled={!selectedYear}
-            style={{ width: '100%', background: 'linear-gradient(to right, #4f46e5, #9333ea)', color: '#fff', fontWeight: 'bold', padding: '14px 20px', borderRadius: '8px', border: 'none', cursor: selectedYear ? 'pointer' : 'not-allowed', opacity: selectedYear ? 1 : 0.5, fontSize: '16px', transition: 'all 0.2s', boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)' }}
+            className="w-full py-3 px-4 rounded-xl bg-[#0059bb] hover:bg-[#004899] text-white font-semibold text-sm shadow-md shadow-blue-900/10 hover:shadow-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue to Dashboard
           </button>

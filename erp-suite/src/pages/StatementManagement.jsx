@@ -1,29 +1,50 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Search, Edit, Trash2, Eye, Plus } from 'lucide-react';
+import { 
+  FileText, 
+  Search, 
+  Trash2, 
+  Eye, 
+  Plus, 
+  Building2, 
+  Calendar, 
+  CheckCircle2, 
+  Clock, 
+  X, 
+  Edit3, 
+  ChevronLeft, 
+  ChevronRight,
+  RotateCcw
+} from 'lucide-react';
 import { getStatements, deleteStatement, updateStatement } from '../services/api';
+import { TableWrapper, Button, EmptyState } from '../components/ui';
 
 export default function StatementManagement() {
   const [statements, setStatements] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedDivision, setSelectedDivision] = useState('All');
+  const [selectedStatus, setSelectedStatus] = useState('All');
 
   const [currentPage, setCurrentPage] = useState(1);
-  const recordsPerPage = 15;
-
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchTerm, selectedDivision]);
+  const recordsPerPage = 12;
 
   const navigate = useNavigate();
 
   useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedDivision, selectedStatus]);
+
+  useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const fetchedStatements = await getStatements();
-        setStatements(fetchedStatements);
+        setStatements(Array.isArray(fetchedStatements) ? fetchedStatements : []);
       } catch (error) {
         console.error('Failed to fetch statements:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -40,7 +61,7 @@ export default function StatementManagement() {
   const handleStatusChange = async (id, newStatus) => {
     try {
       await updateStatement(id, { status: newStatus });
-      setStatements(statements.map(s => s._id === id ? { ...s, status: newStatus } : s));
+      setStatements(prev => prev.map(s => s._id === id ? { ...s, status: newStatus } : s));
     } catch (error) {
       console.error('Failed to update status:', error);
       alert('Failed to update status.');
@@ -51,7 +72,7 @@ export default function StatementManagement() {
     if (window.confirm(`Are you sure you want to delete Statement No: ${statementNo}?`)) {
       try {
         await deleteStatement(id);
-        setStatements(statements.filter(s => s._id !== id));
+        setStatements(prev => prev.map(s => s._id === id ? null : s).filter(Boolean));
       } catch (error) {
         console.error('Failed to delete statement:', error);
         alert('Failed to delete statement.');
@@ -59,17 +80,32 @@ export default function StatementManagement() {
     }
   };
 
+  const resetFilters = () => {
+    setSearchTerm('');
+    setSelectedDivision('All');
+    setSelectedStatus('All');
+  };
+
+  const divisionsList = [...new Set(statements.map(s => s.divisionName).filter(Boolean))];
+
   const filteredStatements = statements.filter(s => {
+    const term = searchTerm.trim().toLowerCase();
     const matchesSearch = 
-      s.statementNo?.toString().includes(searchTerm) || 
-      s.contractorName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.divisionName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      s.date?.includes(searchTerm);
+      !term ||
+      s.statementNo?.toString().toLowerCase().includes(term) || 
+      s.contractorName?.toLowerCase().includes(term) ||
+      s.divisionName?.toLowerCase().includes(term) ||
+      s.date?.toLowerCase().includes(term);
       
     const matchesDivision = selectedDivision === 'All' || s.divisionName === selectedDivision;
+    const matchesStatus = selectedStatus === 'All' || (s.status || 'Pending') === selectedStatus;
     
-    return matchesSearch && matchesDivision;
+    return matchesSearch && matchesDivision && matchesStatus;
   });
+
+  const totalStatements = statements.length;
+  const pendingCount = statements.filter(s => (s.status || 'Pending') === 'Pending').length;
+  const completedCount = statements.filter(s => s.status === 'Completed').length;
 
   const indexOfLastRecord = currentPage * recordsPerPage;
   const indexOfFirstRecord = indexOfLastRecord - recordsPerPage;
@@ -77,150 +113,337 @@ export default function StatementManagement() {
   const totalPages = Math.ceil(filteredStatements.length / recordsPerPage);
 
   return (
-    <div className="dashboard-container" style={{ paddingBottom: '40px' }}>
-      <div className="dashboard-header">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6 pb-12">
+      {/* Page Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="dashboard-title">Statement Management</h1>
-          <p className="dashboard-subtitle">Manage, view, and edit material requirement statements.</p>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="p-2 rounded-xl bg-blue-50 text-[#0059bb] border border-blue-100">
+              <FileText size={22} />
+            </span>
+            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Statement Management</h1>
+          </div>
+          <p className="text-sm text-slate-500 ml-11">
+            Manage, track, inspect, and export material requirement (MR) statements.
+          </p>
         </div>
-        <div className="dashboard-actions">
-          <button className="btn-primary" onClick={() => navigate('/create-statement')}>
-            <Plus size={18} /> New Statement
-          </button>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="primary" 
+            icon={Plus} 
+            onClick={() => navigate('/create-statement')}
+            className="shadow-sm shadow-blue-500/20"
+          >
+            New Statement
+          </Button>
         </div>
       </div>
 
-      <div className="glass-card" style={{ padding: '24px' }}>
-        <div className="section-header-flex" style={{ borderBottom: 'none', marginBottom: '24px' }}>
-          <h2 className="section-title mb-0 border-0" style={{ padding: 0 }}>
-            <FileText className="text-primary" size={20} />
-            Saved Statements
-          </h2>
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <select 
-              className="form-control" 
-              value={selectedDivision} 
-              onChange={(e) => setSelectedDivision(e.target.value)}
-              style={{ width: '200px', background: 'var(--color-surface)', appearance: 'auto' }}
-            >
-              <option value="All">All Divisions</option>
-              {[...new Set(statements.map(s => s.divisionName).filter(Boolean))].map(div => (
-                <option key={div} value={div}>{div}</option>
-              ))}
-            </select>
-
-            <div style={{ position: 'relative' }}>
-              <Search size={18} className="text-muted" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }} />
-              <input 
-                type="text" 
-                placeholder="Search by name, no, date..." 
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="form-control"
-                style={{ paddingLeft: '36px', width: '250px', background: 'var(--color-surface)' }}
-              />
-            </div>
+      {/* KPI Overview Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Statements</p>
+            <h3 className="text-2xl font-bold text-slate-800">{totalStatements}</h3>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center text-[#0059bb]">
+            <FileText size={22} />
           </div>
         </div>
 
-        <div className="table-responsive">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Statement No.</th>
-                <th>Date</th>
-                <th>Contractor</th>
-                <th>Division</th>
-                <th className="text-right">Total Items</th>
-                <th>Status</th>
-                <th className="text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredStatements.length === 0 ? (
-                <tr>
-                  <td colSpan="7" className="text-center text-muted" style={{ padding: '32px' }}>
-                    {statements.length === 0 
-                      ? 'No statements found. Create your first material statement!' 
-                      : 'No statements match your search.'}
-                  </td>
-                </tr>
-              ) : (
-                currentRecords.map((statement, idx) => (
-                  <tr key={statement.statementNo + idx} className={idx % 2 === 1 ? 'bg-alt' : ''}>
-                    <td className="font-mono text-primary font-medium">{statement.statementNo}</td>
-                    <td>{statement.date}</td>
-                    <td>{statement.contractorName}</td>
-                    <td>{statement.divisionName}</td>
-                    <td className="text-right font-mono">
-                      {statement.materials?.length || 0} types
-                    </td>
-                    <td>
-                      <select
-                        className={`badge ${statement.status === 'Completed' ? 'badge-secondary' : 'badge-warning'}`}
-                        value={statement.status || 'Pending'}
-                        onChange={(e) => handleStatusChange(statement._id, e.target.value)}
-                        style={{ border: 'none', cursor: 'pointer', outline: 'none' }}
-                      >
-                        <option value="Pending" style={{background: 'var(--color-surface)', color: 'var(--color-on-surface)'}}>Pending</option>
-                        <option value="Completed" style={{background: 'var(--color-surface)', color: 'var(--color-on-surface)'}}>Completed</option>
-                      </select>
-                    </td>
-                    <td className="text-right">
-                      <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
-                        <button 
-                          className="action-icon" 
-                          onClick={() => handleView(statement)}
-                          title="View & Print"
-                          style={{ background: 'none', border: 'none' }}
-                        >
-                          <Eye size={18} />
-                        </button>
-                        <button 
-                          className="action-icon text-primary" 
-                          onClick={() => handleEdit(statement)}
-                          title="Edit"
-                          style={{ background: 'none', border: 'none' }}
-                        >
-                          <Edit size={18} />
-                        </button>
-                        <button 
-                          className="action-icon text-error" 
-                          onClick={() => handleDelete(statement._id, statement.statementNo)}
-                          title="Delete"
-                          style={{ background: 'none', border: 'none' }}
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold text-amber-600 uppercase tracking-wider mb-1">Pending Approval</p>
+            <h3 className="text-2xl font-bold text-amber-700">{pendingCount}</h3>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+            <Clock size={22} />
+          </div>
         </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold text-emerald-600 uppercase tracking-wider mb-1">Completed</p>
+            <h3 className="text-2xl font-bold text-emerald-700">{completedCount}</h3>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+            <CheckCircle2 size={22} />
+          </div>
+        </div>
+
+        <div className="bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex items-center justify-between">
+          <div>
+            <p className="text-xs font-semibold text-purple-600 uppercase tracking-wider mb-1">Active Divisions</p>
+            <h3 className="text-2xl font-bold text-purple-700">{divisionsList.length}</h3>
+          </div>
+          <div className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600">
+            <Building2 size={22} />
+          </div>
+        </div>
+      </div>
+
+      {/* Main Table Container */}
+      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-4 sm:p-6">
+        {/* Controls and Search Toolbar */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+              Saved Statements
+            </h2>
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-200">
+              {filteredStatements.length} {filteredStatements.length === 1 ? 'record' : 'records'}
+            </span>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            {/* Division Filter */}
+            <div className="relative min-w-[150px]">
+              <select 
+                className="w-full pl-3 pr-8 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all cursor-pointer"
+                value={selectedDivision} 
+                onChange={(e) => setSelectedDivision(e.target.value)}
+              >
+                <option value="All">All Divisions</option>
+                {divisionsList.map(div => (
+                  <option key={div} value={div}>{div}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Status Filter */}
+            <div className="relative min-w-[130px]">
+              <select 
+                className="w-full pl-3 pr-8 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all cursor-pointer"
+                value={selectedStatus} 
+                onChange={(e) => setSelectedStatus(e.target.value)}
+              >
+                <option value="All">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Completed">Completed</option>
+              </select>
+            </div>
+
+            {/* Search Input with Icon and Clear Button */}
+            <div className="relative flex-1 sm:w-64 min-w-[220px]">
+              <Search size={17} className="text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input 
+                type="text" 
+                placeholder="Search statements, parties, dates..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-9 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl text-slate-800 placeholder-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all"
+              />
+              {searchTerm && (
+                <button 
+                  onClick={() => setSearchTerm('')} 
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  title="Clear search"
+                >
+                  <X size={15} />
+                </button>
+              )}
+            </div>
+
+            {/* Reset Filter Button */}
+            {(searchTerm || selectedDivision !== 'All' || selectedStatus !== 'All') && (
+              <button 
+                onClick={resetFilters}
+                className="p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors"
+                title="Reset filters"
+              >
+                <RotateCcw size={16} />
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Data Table */}
+        {loading ? (
+          <div className="py-16 text-center text-slate-500 flex flex-col items-center justify-center gap-3">
+            <span className="w-8 h-8 border-3 border-[#0059bb] border-t-transparent rounded-full animate-spin" />
+            <p className="text-sm font-medium">Loading statements...</p>
+          </div>
+        ) : filteredStatements.length === 0 ? (
+          <EmptyState
+            title={statements.length === 0 ? "No statements found" : "No matching statements"}
+            description={statements.length === 0 
+              ? "Create your first material requirement statement to get started." 
+              : "Try adjusting your search terms or filters to find what you're looking for."}
+            actionLabel={statements.length === 0 ? "New Statement" : "Reset Filters"}
+            onAction={statements.length === 0 ? () => navigate('/create-statement') : resetFilters}
+          />
+        ) : (
+          <TableWrapper minWidth="880px">
+            <table className="w-full text-xs sm:text-sm text-left border-collapse">
+              <thead>
+                <tr className="border-b border-slate-200 bg-slate-50/80">
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider w-36">Statement No.</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider w-32">Date</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider">Contractor</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider w-36">Division</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider w-28 text-center">Items</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider w-36 text-center">Status</th>
+                  <th className="px-4 py-3 font-semibold text-xs text-slate-500 uppercase tracking-wider w-32 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {currentRecords.map((statement, idx) => {
+                  const isCompleted = statement.status === 'Completed';
+                  return (
+                    <tr 
+                      key={statement._id || statement.statementNo + idx} 
+                      className="hover:bg-blue-50/40 transition-colors"
+                    >
+                      {/* Statement No. */}
+                      <td className="px-4 py-3">
+                        <button
+                          onClick={() => handleView(statement)}
+                          className="font-mono text-sm font-bold text-[#0059bb] hover:underline flex items-center gap-1.5 cursor-pointer"
+                          title="Click to view & print"
+                        >
+                          {statement.statementNo}
+                        </button>
+                      </td>
+
+                      {/* Date */}
+                      <td className="px-4 py-3 text-slate-600 text-sm whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar size={14} className="text-slate-400 shrink-0" />
+                          <span>{statement.date || '-'}</span>
+                        </div>
+                      </td>
+
+                      {/* Contractor */}
+                      <td className="px-4 py-3">
+                        <div className="font-medium text-slate-900 text-sm">
+                          {statement.contractorName || '-'}
+                        </div>
+                      </td>
+
+                      {/* Division */}
+                      <td className="px-4 py-3">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+                          {statement.divisionName || 'Deesa'}
+                        </span>
+                      </td>
+
+                      {/* Total Items */}
+                      <td className="px-4 py-3 text-center">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-blue-50 text-[#0059bb] border border-blue-100 font-mono">
+                          {statement.materials?.length || 0} types
+                        </span>
+                      </td>
+
+                      {/* Status Selector */}
+                      <td className="px-4 py-3 text-center">
+                        <select
+                          value={statement.status || 'Pending'}
+                          onChange={(e) => handleStatusChange(statement._id, e.target.value)}
+                          className={`text-xs font-semibold px-2.5 py-1 rounded-full border cursor-pointer outline-none transition-all ${
+                            isCompleted
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
+                              : 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100'
+                          }`}
+                        >
+                          <option value="Pending">Pending</option>
+                          <option value="Completed">Completed</option>
+                        </select>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button 
+                            onClick={() => handleView(statement)}
+                            title="Preview & Print"
+                            className="p-1.5 rounded-lg text-blue-600 hover:bg-blue-50 transition-colors cursor-pointer"
+                          >
+                            <Eye size={17} />
+                          </button>
+                          <button 
+                            onClick={() => handleEdit(statement)}
+                            title="Edit Statement"
+                            className="p-1.5 rounded-lg text-amber-600 hover:bg-amber-50 transition-colors cursor-pointer"
+                          >
+                            <Edit3 size={17} />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(statement._id, statement.statementNo)}
+                            title="Delete Statement"
+                            className="p-1.5 rounded-lg text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                          >
+                            <Trash2 size={17} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </TableWrapper>
+        )}
 
         {/* Pagination Controls */}
         {totalPages > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '15px', marginTop: '20px' }}>
-            <button 
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
-              style={{ padding: '8px 16px', border: '1px solid #ccc', background: currentPage === 1 ? '#f8f9fa' : 'white', borderRadius: '4px', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', color: currentPage === 1 ? '#adb5bd' : '#495057' }}
-            >
-              Previous
-            </button>
-            <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#495057' }}>
-              Page {currentPage} of {totalPages}
-            </span>
-            <button 
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              style={{ padding: '8px 16px', border: '1px solid #ccc', background: currentPage === totalPages ? '#f8f9fa' : 'white', borderRadius: '4px', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', color: currentPage === totalPages ? '#adb5bd' : '#495057' }}
-            >
-              Next
-            </button>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 pt-4 border-t border-slate-100 text-sm">
+            <p className="text-slate-500">
+              Showing <span className="font-semibold text-slate-700">{indexOfFirstRecord + 1}</span> to{' '}
+              <span className="font-semibold text-slate-700">
+                {Math.min(indexOfLastRecord, filteredStatements.length)}
+              </span> of <span className="font-semibold text-slate-700">{filteredStatements.length}</span> statements
+            </p>
+
+            <div className="flex items-center gap-1.5">
+              <button 
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title="Previous Page"
+              >
+                <ChevronLeft size={16} />
+              </button>
+
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1)
+                  .filter(page => {
+                    return (
+                      page === 1 ||
+                      page === totalPages ||
+                      Math.abs(page - currentPage) <= 1
+                    );
+                  })
+                  .map((page, i, arr) => {
+                    const prevPage = arr[i - 1];
+                    return (
+                      <React.Fragment key={page}>
+                        {prevPage && page - prevPage > 1 && (
+                          <span className="px-2 text-slate-400">...</span>
+                        )}
+                        <button
+                          onClick={() => setCurrentPage(page)}
+                          className={`w-8 h-8 rounded-lg text-xs font-semibold transition-all ${
+                            currentPage === page
+                              ? 'bg-[#0059bb] text-white shadow-sm'
+                              : 'text-slate-600 hover:bg-slate-100'
+                          }`}
+                        >
+                          {page}
+                        </button>
+                      </React.Fragment>
+                    );
+                  })}
+              </div>
+
+              <button 
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                title="Next Page"
+              >
+                <ChevronRight size={16} />
+              </button>
+            </div>
           </div>
         )}
       </div>

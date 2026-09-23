@@ -70,108 +70,22 @@ export default function Invoice() {
     window.print();
   };
 
+  const inputClass = "w-full border border-dashed border-slate-300 bg-amber-50 text-inherit p-0.5 box-border rounded text-xs focus:outline-none focus:border-[#0059bb] focus:bg-white focus:border-solid print:border-none print:bg-transparent print:p-0";
+
   return (
-    <div className="preview-container">
-      <style>
-        {`
-          .preview-container {
-            background-color: #f0f2f5;
-            min-height: 100vh;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            font-size: 13px;
-            color: #000;
-          }
-          .preview-actions {
-            max-width: 210mm;
-            margin: 0 auto 20px auto;
-            display: flex;
-            justify-content: space-between;
-            background: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-          }
-          .document-paper {
-            background: white;
-            max-width: 210mm;
-            min-height: 297mm;
-            margin: 0 auto;
-            padding: 10mm;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            box-sizing: border-box;
-          }
-          
-          .excel-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid #000;
-          }
-          .excel-table td {
-            border: 1px solid #000;
-            padding: 3px 6px;
-            vertical-align: top;
-          }
-          .excel-table .center { text-align: center; }
-          .excel-table .right { text-align: right; }
-          
-          /* Removing internal borders for item rows to simulate Excel empty rows */
-          .item-row td {
-            border-top: none;
-            border-bottom: none;
-          }
-
-          /* Interactive Input Styles */
-          .invoice-input {
-            width: 100%;
-            border: 1px dashed #ccc;
-            background: #fff9e6;
-            font-family: inherit;
-            font-size: inherit;
-            color: inherit;
-            padding: 2px 4px;
-            box-sizing: border-box;
-            border-radius: 2px;
-          }
-          .invoice-input:focus {
-            outline: 1px solid #0066cc;
-            background: #fff;
-            border-style: solid;
-          }
-          .invoice-input.center { text-align: center; }
-          .invoice-input.right { text-align: right; }
-
-          @media print {
-            @page { size: A4 portrait !important; margin: 0 !important; }
-            html, body { background: white; margin: 0 !important; padding: 0 !important; height: auto; min-height: 100%; overflow: visible; -webkit-print-color-adjust: exact; }
-            .no-print { display: none !important; }
-            .preview-container { padding: 0; background: white; font-size: 12px; min-height: 0; display: block; }
-            .document-paper { 
-              box-shadow: none; border: none; padding: 5mm; margin: 0; 
-              width: 100%; height: auto; min-height: 0; box-sizing: border-box; 
-              page-break-after: avoid;
-              page-break-inside: avoid;
-            }
-            .invoice-input {
-              border: none !important;
-              background: transparent !important;
-              padding: 0 !important;
-            }
-          }
-        `}
-      </style>
-
-      <div className="preview-actions no-print">
-        <button className="btn-outline" onClick={() => navigate(-1)}>
-          <ArrowLeft size={16} style={{ marginRight: '6px' }} /> Back
+    <div className="p-4 sm:p-6 bg-slate-100 min-h-screen print:bg-white print:p-0 print:min-h-0 font-sans text-xs text-black">
+      <div className="print:hidden max-w-4xl mx-auto mb-6 flex flex-wrap items-center justify-between gap-4 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+        <button className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold text-xs sm:text-sm transition-colors cursor-pointer" onClick={() => navigate(-1)}>
+          <ArrowLeft size={16} /> Back
         </button>
-        <button className="btn-primary" onClick={handlePrint}>
-          <Printer size={18} style={{ marginRight: '6px' }} /> Print / Save PDF
+        <button className="inline-flex items-center gap-2 px-4 py-2 bg-[#0059bb] hover:bg-[#004c9e] text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer" onClick={handlePrint}>
+          <Printer size={16} /> Print / Save PDF
         </button>
       </div>
 
-      <div className="document-paper">
-        <table className="excel-table">
+      <div className="overflow-x-auto w-full pb-6 print:p-0 print:overflow-visible">
+      <div className="bg-white max-w-[210mm] mx-auto p-4 sm:p-8 shadow-md border border-slate-200 text-black box-border print:shadow-none print:border-none print:p-2 print:m-0 print:max-w-none print:w-full">
+        <table className="w-full border-collapse border border-black text-xs font-sans">
           <colgroup>
             <col style={{ width: '15%' }} />
             <col style={{ width: '40%' }} />
@@ -182,15 +96,15 @@ export default function Invoice() {
           <tbody>
             {/* Top Headers */}
             <tr>
-              <td colSpan={5} className="center">TAX INVOICE (ORIGINAL FOR RECIPIENT)</td>
+              <td colSpan={5} className="border border-black p-1 text-center font-bold text-[11px]">TAX INVOICE (ORIGINAL FOR RECIPIENT)</td>
             </tr>
             <tr>
-              <td colSpan={5} className="center" style={{ color: 'red', fontWeight: 'bold', fontSize: '20px', textTransform: 'uppercase', fontFamily: 'Georgia, serif' }}>
+              <td colSpan={5} className="border border-black p-1 text-center text-red-600 font-extrabold text-xl uppercase font-serif">
                 NEETA ENGINEERING WORKS
               </td>
             </tr>
             <tr>
-              <td colSpan={5} className="center" style={{ color: 'red', fontWeight: 'bold' }}>
+              <td colSpan={5} className="border border-black p-1 text-center text-red-600 font-bold">
                 179,GIDC ,CHANDISAR TA,PALANPUR B.K
               </td>
             </tr>
@@ -226,41 +140,40 @@ export default function Invoice() {
 
             {/* Bill To & Invoice Info */}
             <tr>
-              <td colSpan={2}>Bill To And Ship To Address Of Custom</td>
-              <td colSpan={2}>Invoice No:-</td>
-              <td className="center">
+              <td colSpan={2} className="border border-black p-1">Bill To And Ship To Address Of Custom</td>
+              <td colSpan={2} className="border border-black p-1">Invoice No:-</td>
+              <td className="border border-black p-1 text-center">
                 <input 
                   type="text" 
-                  className="invoice-input center" 
+                  className={`${inputClass} text-center`}
                   value={invoiceNo} 
                   onChange={(e) => setInvoiceNo(e.target.value)} 
                 />
               </td>
             </tr>
             <tr>
-              <td colSpan={2}>Uttar Gujarat Vij.Co.Ltd.</td>
-              <td colSpan={2}>Invoice Date:-</td>
-              <td className="center">
+              <td colSpan={2} className="border border-black p-1">Uttar Gujarat Vij.Co.Ltd.</td>
+              <td colSpan={2} className="border border-black p-1">Invoice Date:-</td>
+              <td className="border border-black p-1 text-center">
                 <input 
                   type="text" 
-                  className="invoice-input center" 
+                  className={`${inputClass} text-center`}
                   value={invoiceDate} 
                   onChange={(e) => setInvoiceDate(e.target.value)} 
                 />
               </td>
             </tr>
             <tr>
-              <td colSpan={2}>{division.endsWith('-2') ? 'Division office-2' : 'Division office'}</td>
-              <td colSpan={2}>Nature Of Supply:-</td>
-              <td className="center">24GUJARAT</td>
+              <td colSpan={2} className="border border-black p-1">{division.endsWith('-2') ? 'Division office-2' : 'Division office'}</td>
+              <td colSpan={2} className="border border-black p-1">Nature Of Supply:-</td>
+              <td className="border border-black p-1 text-center font-semibold">24GUJARAT</td>
             </tr>
             <tr>
-              <td colSpan={2}>
+              <td colSpan={2} className="border border-black p-1">
                 <select 
-                  className="invoice-input" 
+                  className={`${inputClass} cursor-pointer`}
                   value={division} 
                   onChange={(e) => setDivision(e.target.value)}
-                  style={{ cursor: 'pointer', appearance: 'auto' }}
                 >
                   {invoiceDivisions.map(div => (
                     <option key={div._id || div.name} value={div.name}>{div.name}</option>
@@ -268,16 +181,15 @@ export default function Invoice() {
                   {invoiceDivisions.length === 0 && <option value="Deesa-1">Deesa-1</option>}
                 </select>
               </td>
-              <td colSpan={2}>Nature Of Trans:-</td>
-              <td className="center"></td>
+              <td colSpan={2} className="border border-black p-1">Nature Of Trans:-</td>
+              <td className="border border-black p-1 text-center"></td>
             </tr>
             <tr>
-              <td colSpan={2}>
+              <td colSpan={2} className="border border-black p-1">
                 <select 
-                  className="invoice-input" 
+                  className={`${inputClass} cursor-pointer`}
                   value={division} 
                   onChange={(e) => setDivision(e.target.value)}
-                  style={{ cursor: 'pointer', appearance: 'auto' }}
                 >
                   {invoiceDivisions.map(div => (
                     <option key={div._id || div.name} value={div.name}>{div.name}</option>
@@ -285,50 +197,49 @@ export default function Invoice() {
                   {invoiceDivisions.length === 0 && <option value="Deesa-1">Deesa-1</option>}
                 </select>
               </td>
-              <td colSpan={2}>Nature Of Invoice:-</td>
-              <td className="center"></td>
+              <td colSpan={2} className="border border-black p-1">Nature Of Invoice:-</td>
+              <td className="border border-black p-1 text-center"></td>
             </tr>
             <tr>
-              <td colSpan={2}>Gujarat (India)</td>
-              <td colSpan={2}>Reverse Charge:-</td>
-              <td className="center"></td>
+              <td colSpan={2} className="border border-black p-1">Gujarat (India)</td>
+              <td colSpan={2} className="border border-black p-1">Reverse Charge:-</td>
+              <td className="border border-black p-1 text-center"></td>
             </tr>
             <tr>
-              <td colSpan={2}>Place Of Service:- 24 Gujarat</td>
-              <td colSpan={3} rowSpan={4}></td>
+              <td colSpan={2} className="border border-black p-1">Place Of Service:- 24 Gujarat</td>
+              <td colSpan={3} rowSpan={4} className="border border-black p-1"></td>
             </tr>
             <tr>
-              <td colSpan={2}>Contact Deetails:- </td>
+              <td colSpan={2} className="border border-black p-1">Contact Deetails:- </td>
             </tr>
             <tr>
-              <td colSpan={2}>PAN NO:- AAACU6551F</td>
+              <td colSpan={2} className="border border-black p-1">PAN NO:- AAACU6551F</td>
             </tr>
             <tr>
-              <td colSpan={2}>GST NO:-24AAACU6551F1ZI</td>
+              <td colSpan={2} className="border border-black p-1">GST NO:-24AAACU6551F1ZI</td>
             </tr>
 
             {/* Items Header */}
-            <tr>
-              <td colSpan={2} className="center" style={{ borderBottom: '1px solid #000' }}>DESCRIPTION</td>
-              <td className="center" style={{ borderBottom: '1px solid #000' }}>RATE</td>
-              <td className="center" style={{ borderBottom: '1px solid #000' }}>QTY</td>
-              <td className="center" style={{ borderBottom: '1px solid #000' }}>AMOUNT<br/>(IN.RS.)</td>
+            <tr className="bg-slate-50 font-bold">
+              <td colSpan={2} className="border border-black p-1 text-center">DESCRIPTION</td>
+              <td className="border border-black p-1 text-center">RATE</td>
+              <td className="border border-black p-1 text-center">QTY</td>
+              <td className="border border-black p-1 text-center">AMOUNT<br/>(IN.RS.)</td>
             </tr>
 
             {/* Items Loop */}
-            <tr className="item-row">
-              <td colSpan={2} style={{ textAlign: 'left', paddingLeft: '5mm' }}>
+            <tr>
+              <td colSpan={2} className="border-l border-r border-black p-1 text-left pl-3">
                 Labour Works Of Fabrication item works as per Driwing &Specification.
               </td>
-              <td className="center"></td>
-              <td className="center"></td>
-              <td className="right" style={{ paddingRight: '4mm' }}>
+              <td className="border-l border-r border-black p-1 text-center"></td>
+              <td className="border-l border-r border-black p-1 text-center"></td>
+              <td className="border-l border-r border-black p-1 text-right pr-2">
                 <input 
                   type="number" 
-                  className="invoice-input right" 
+                  className={`${inputClass} text-right w-24`}
                   value={amountInput} 
                   onChange={(e) => setAmountInput(e.target.value)} 
-                  style={{ width: '100px' }}
                 />
               </td>
             </tr>
@@ -406,6 +317,7 @@ export default function Invoice() {
             </tr>
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

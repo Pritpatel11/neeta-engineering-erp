@@ -1,0 +1,26 @@
+{
+  "name": "neeta-erp-mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol (MCP) Server for Neeta Engineering ERP",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js",
+    "test-tools": "node test-tools.js"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "claude",
+    "erp",
+    "neeta-engineering"
+  ],
+  "author": "Neeta Engineering",
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "axios": "^1.8.1",
+    "dotenv": "^16.4.7",
+    "zod": "^3.24.2"
+  }
+}

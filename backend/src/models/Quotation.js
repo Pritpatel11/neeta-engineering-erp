@@ -18,6 +18,9 @@ const quotationSchema = new mongoose.Schema({
   clientEmail: String,
   clientPhone: String,
   clientAddress: String,
+  clientCity: { type: String, default: '' },
+  clientDistrict: { type: String, default: '' },
+  clientPincode: { type: String, default: '' },
   clientGST: String,
   documentType: {
     type: String,
@@ -44,6 +47,30 @@ const quotationSchema = new mongoose.Schema({
     default: 0
   },
   taxAmount: {
+    type: Number,
+    default: 0
+  },
+  isInterState: {
+    type: Boolean,
+    default: false
+  },
+  buyerState: {
+    type: String,
+    default: ''
+  },
+  buyerStateCode: {
+    type: String,
+    default: ''
+  },
+  cgstAmount: {
+    type: Number,
+    default: 0
+  },
+  sgstAmount: {
+    type: Number,
+    default: 0
+  },
+  igstAmount: {
     type: Number,
     default: 0
   },

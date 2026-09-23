@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { createStatement, updateStatement, getMaterials, getDivisions, getContractors, getInventoryBalances, getSubDivisions } from '../services/api';
 import { handleFormKeyboardNav } from '../utils/keyboardNav';
-import './CreateChallan.css'; 
 
 export default function CreateStatement() {
   const [materialsList, setMaterialsList] = useState([]);
@@ -280,48 +279,48 @@ export default function CreateStatement() {
   };
 
   return (
-    <div className="challan-container">
-      <header className="challan-header">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <header className="flex flex-col gap-1">
         <div>
-          <h1 className="dashboard-title">{isEditing ? 'Edit Material Statement' : 'Create Material Statement'}</h1>
-          <p className="dashboard-subtitle">{isEditing ? 'Modify existing material requirement slip with multiple MR Numbers.' : 'Generate a material requirement slip with multiple MR Numbers.'}</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{isEditing ? 'Edit Material Statement' : 'Create Material Statement'}</h1>
+          <p className="text-sm text-slate-500 mt-1">{isEditing ? 'Modify existing material requirement slip with multiple MR Numbers.' : 'Generate a material requirement slip with multiple MR Numbers.'}</p>
         </div>
       </header>
 
-      <form className="challan-form" onSubmit={handleGenerateStatement} onKeyDown={handleFormKeyboardNav}>
+      <form className="space-y-6 pb-28" onSubmit={handleGenerateStatement} onKeyDown={handleFormKeyboardNav}>
         {/* General Information */}
-        <section className="form-section glass-card">
-          <h2 className="section-title">
-            <Info className="text-primary" size={20} />
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
+            <Info className="text-[#0059bb]" size={20} />
             General Information
           </h2>
-          <div className="form-grid-3">
-            <div className="form-group">
-              <label>Statement No.</label>
-              <input type="number" name="statementNo" defaultValue={getNextStatementNo()} className="form-control" required />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Statement No.</label>
+              <input type="number" name="statementNo" defaultValue={getNextStatementNo()} className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" required />
             </div>
-            <div className="form-group">
-              <label>Date</label>
-              <input type="text" name="date" placeholder="dd/mm/yyyy" defaultValue={existingStatement ? existingStatement.date : ''} className="form-control" required />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Date</label>
+              <input type="text" name="date" placeholder="dd/mm/yyyy" defaultValue={existingStatement ? existingStatement.date : ''} className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" required />
             </div>
           </div>
         </section>
 
         {/* Administrative Details */}
-        <section className="form-section glass-card">
-          <h2 className="section-title">
-            <Building className="text-primary" size={20} />
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
+            <Building className="text-[#0059bb]" size={20} />
             Administrative Details
           </h2>
-          <div className="form-grid-3">
-            <div className="form-group">
-              <label>Contractor Name</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Contractor Name</label>
               <input 
                 type="text" 
                 name="contractorName" 
                 defaultValue={existingStatement ? existingStatement.contractorName : ''} 
                 placeholder="Enter Contractor Name" 
-                className="form-control" 
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
                 list="contractors-list"
                 required 
               />
@@ -329,11 +328,11 @@ export default function CreateStatement() {
                 {contractors.map(c => <option key={c} value={c} />)}
               </datalist>
             </div>
-            <div className="form-group">
-              <label>Division/Tender Name</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Division/Tender Name</label>
               <select 
                 name="divisionName" 
-                className="form-control" 
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all cursor-pointer" 
                 value={selectedDivision}
                 onChange={(e) => setSelectedDivision(e.target.value)}
                 required
@@ -345,45 +344,44 @@ export default function CreateStatement() {
                 )}
               </select>
             </div>
-            <div className="form-group">
-              <label>Sub-Division Name</label>
-              <input type="text" name="subDivisionName" defaultValue={existingStatement ? existingStatement.subDivisionName : ''} placeholder="Enter Sub-Division" className="form-control" list="subdivisions-list" required />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Sub-Division Name</label>
+              <input type="text" name="subDivisionName" defaultValue={existingStatement ? existingStatement.subDivisionName : ''} placeholder="Enter Sub-Division" className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" list="subdivisions-list" required />
               <datalist id="subdivisions-list">
                 {subDivisions.map(s => <option key={s} value={s} />)}
               </datalist>
             </div>
             
-            <div className="form-group" style={{ gridColumn: 'span 3', marginTop: '16px', background: 'var(--color-background)', padding: '16px', borderRadius: '8px', border: '1px dashed var(--color-border)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Hash size={16} className="text-primary"/> 
+            <div className="col-span-1 sm:col-span-2 lg:col-span-3 mt-4 bg-slate-50 p-4 sm:p-5 rounded-2xl border border-dashed border-slate-300 space-y-3">
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                <Hash size={16} className="text-[#0059bb]"/> 
                 Multiple MR / Lot Numbers
               </label>
-              <p className="text-muted" style={{ fontSize: '12px', marginBottom: '12px' }}>Enter an MR number and a popup will open for you to assign materials and quantities for it.</p>
+              <p className="text-xs text-slate-500">Enter an MR number and a popup will open for you to assign materials and quantities for it.</p>
               
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '12px' }}>
-                {mrNumbers.length === 0 && <span className="text-muted" style={{ fontSize: '13px' }}>No MR numbers added yet.</span>}
+              <div className="flex gap-2 flex-wrap mb-3">
+                {mrNumbers.length === 0 && <span className="text-xs text-slate-400">No MR numbers added yet.</span>}
                 {mrNumbers.map(mr => (
-                  <div key={mr} className="badge badge-primary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '6px 12px', fontSize: '14px', background: 'var(--color-primary)', color: 'white', borderRadius: '16px' }}>
-                    <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px' }} onClick={() => openMrModal(mr)} title="Edit Quantities for this MR">
+                  <div key={mr} className="inline-flex items-center gap-2 px-3 py-1.5 bg-[#0059bb] text-white rounded-full text-xs font-semibold shadow-xs">
+                    <span className="cursor-pointer flex items-center gap-1 hover:underline" onClick={() => openMrModal(mr)} title="Edit Quantities for this MR">
                       {mr} {poNumbers[mr] ? `(PO: ${poNumbers[mr]})` : ''}
                     </span>
-                    <div style={{ width: '1px', height: '14px', background: 'rgba(255,255,255,0.3)' }}></div>
-                    <Edit2 size={14} style={{ cursor: 'pointer' }} onClick={() => openEditMrInfoModal(mr)} title="Edit MR/PO/Rel Details" />
-                    <X size={14} style={{ cursor: 'pointer' }} onClick={() => handleRemoveMrNumber(mr)} title="Remove MR" />
+                    <div className="w-px h-3.5 bg-white/30"></div>
+                    <Edit2 size={13} className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => openEditMrInfoModal(mr)} title="Edit MR/PO/Rel Details" />
+                    <X size={13} className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => handleRemoveMrNumber(mr)} title="Remove MR" />
                   </div>
                 ))}
               </div>
               
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label style={{ fontSize: '12px' }}>MR/Lot No.</label>
+              <div className="flex flex-wrap gap-3 items-end">
+                <div className="flex-1 min-w-[140px] flex flex-col gap-1">
+                  <label className="text-xs text-slate-500 font-medium">MR/Lot No.</label>
                   <input 
                     type="text" 
-                    placeholder="Enter MR/Lot No"
-                    value={newMrNumber}
-                    onChange={(e) => setNewMrNumber(e.target.value)}
-                    className="form-control"
-                    style={{ width: '180px' }}
+                    placeholder="Enter MR No." 
+                    value={newMrNumber} 
+                    onChange={(e) => setNewMrNumber(e.target.value)} 
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -392,15 +390,14 @@ export default function CreateStatement() {
                     }}
                   />
                 </div>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label style={{ fontSize: '12px' }}>PO No.</label>
+                <div className="flex-1 min-w-[140px] flex flex-col gap-1">
+                  <label className="text-xs text-slate-500 font-medium">P.O. No.</label>
                   <input 
                     type="text" 
-                    placeholder="Enter PO No."
+                    placeholder="Enter P.O. No."
                     value={newPoNumber}
                     onChange={(e) => setNewPoNumber(e.target.value)}
-                    className="form-control"
-                    style={{ width: '150px' }}
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -409,15 +406,14 @@ export default function CreateStatement() {
                     }}
                   />
                 </div>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label style={{ fontSize: '12px' }}>Rel No.</label>
+                <div className="flex-1 min-w-[140px] flex flex-col gap-1">
+                  <label className="text-xs text-slate-500 font-medium">Rel No.</label>
                   <input 
                     type="text" 
                     placeholder="Enter Rel No."
                     value={newRelNumber}
                     onChange={(e) => setNewRelNumber(e.target.value)}
-                    className="form-control"
-                    style={{ width: '120px' }}
+                    className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
@@ -426,7 +422,11 @@ export default function CreateStatement() {
                     }}
                   />
                 </div>
-                <button type="button" className="btn-primary" onClick={handleAddMrNumber} style={{ height: '42px' }}>
+                <button 
+                  type="button" 
+                  className="px-4 py-2 bg-[#0059bb] hover:bg-[#004899] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer" 
+                  onClick={handleAddMrNumber}
+                >
                   Add MR No.
                 </button>
               </div>
@@ -435,69 +435,71 @@ export default function CreateStatement() {
         </section>
 
         {/* Material Selection */}
-        <section className="form-section glass-card">
-          <div className="section-header-flex">
-            <h2 className="section-title mb-0 border-0">
-              <Package className="text-primary" size={20} />
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <div className="pb-3 mb-4 border-b border-slate-100">
+            <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+              <Package className="text-[#0059bb]" size={20} />
               Material Requirement Overview
             </h2>
           </div>
           
-          <div className="table-responsive mt-4">
-            <table className="data-table">
+          <div className="w-full overflow-x-auto mt-4 rounded-xl border border-slate-200">
+            <table className="w-full text-left border-collapse min-w-[600px]">
               <thead>
-                <tr>
-                  <th>Material Name</th>
-                  <th>Unit</th>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Material Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Unit</th>
                   {mrNumbers.map((mr, i) => (
-                    <th key={i} className="text-center" style={{ minWidth: '80px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
-                        <span className="font-mono text-primary" style={{ cursor: 'pointer' }} onClick={() => openMrModal(mr)} title="Click to Edit">{mr} <Edit2 size={12} /></span>
+                    <th key={i} className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center min-w-[90px]">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <span className="font-mono text-[#0059bb] cursor-pointer hover:underline inline-flex items-center gap-1" onClick={() => openMrModal(mr)} title="Click to Edit">
+                          {mr} <Edit2 size={11} />
+                        </span>
                       </div>
                     </th>
                   ))}
-                  <th className="text-right">Total Qty</th>
-                  <th></th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Total Qty</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider w-16"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {materials.length === 0 ? (
                   <tr>
-                    <td colSpan={4 + mrNumbers.length} className="text-center text-muted" style={{ padding: '32px' }}>
+                    <td colSpan={4 + mrNumbers.length} className="text-center text-slate-400 py-8 text-sm">
                       No items added yet. Please enter an MR Number above to add materials.
                     </td>
                   </tr>
                 ) : (
                   materials.map((item, index) => (
-                    <tr key={item.id || item.name || index} className="group">
-                      <td className="font-medium">{item.name}</td>
-                      <td className="text-muted">{item.unit}</td>
+                    <tr key={item.id || item.name || index} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-slate-800">{item.name}</td>
+                      <td className="px-4 py-3 text-sm text-slate-500">{item.unit}</td>
                       
                       {mrNumbers.map(mr => (
-                        <td key={mr} className="text-center">
+                        <td key={mr} className="px-4 py-3 text-center">
                           <input 
                             type="number" 
                             value={(item.mrQuantities && item.mrQuantities[mr]) || ''} 
                             onChange={(e) => handleMrQtyChange(item.id, mr, e.target.value)}
-                            className="form-control-minimal text-center font-mono" 
+                            className="w-20 px-2 py-1 text-center font-mono bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]" 
                             placeholder="0"
                             min="0"
                           />
                         </td>
                       ))}
 
-                      <td className="text-right font-mono font-bold" style={{ fontSize: '1.1rem' }}>
+                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-900 text-base">
                         {item.qty || 0}
                         {item.qty > getAvailableBalance(item.name) && (
-                          <div className="text-error" style={{ fontSize: '11px', marginTop: '4px', fontWeight: '500', fontFamily: 'sans-serif' }}>
+                          <div className="text-rose-600 text-[11px] font-medium font-sans mt-1">
                             Warning: Stock {getAvailableBalance(item.name)}
                           </div>
                         )}
                       </td>
-                      <td className="text-right">
+                      <td className="px-4 py-3 text-right">
                         <button 
                           type="button" 
-                          className="action-icon text-error"
+                          className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           onClick={() => handleDeleteItem(item.id)}
                         >
                           <Trash2 size={18} />
@@ -509,14 +511,14 @@ export default function CreateStatement() {
               </tbody>
               {materials.length > 0 && mrNumbers.length > 0 && (
                 <tfoot>
-                  <tr>
-                    <td colSpan={2} className="text-right font-bold text-muted">Total Per MR:</td>
+                  <tr className="bg-slate-50 border-t-2 border-slate-200 font-bold">
+                    <td colSpan={2} className="px-4 py-3 text-right text-xs uppercase tracking-wider text-slate-500">Total Per MR:</td>
                     {mrNumbers.map(mr => (
-                      <td key={`total-${mr}`} className="text-center font-bold font-mono text-primary" style={{ fontSize: '1.1rem' }}>
+                      <td key={`total-${mr}`} className="px-4 py-3 text-center font-mono text-[#0059bb] text-base">
                         {materials.reduce((sum, item) => sum + ((item.mrQuantities && item.mrQuantities[mr]) || 0), 0)}
                       </td>
                     ))}
-                    <td className="text-right font-bold font-mono" style={{ fontSize: '1.2rem' }}>
+                    <td className="px-4 py-3 text-right font-mono text-slate-900 text-lg font-extrabold">
                       {materials.reduce((sum, item) => sum + (item.qty || 0), 0)}
                     </td>
                     <td></td>
@@ -528,9 +530,19 @@ export default function CreateStatement() {
         </section>
 
         {/* Footer Actions */}
-        <div className="form-actions-footer">
-          <button type="button" className="btn-outline" onClick={() => navigate(-1)}>Cancel</button>
-          <button type="submit" className="btn-primary" disabled={materials.length === 0}>
+        <div className="fixed bottom-0 left-0 right-0 lg:left-[280px] bg-white/95 backdrop-blur-md border-t border-slate-200 px-6 py-4 flex justify-end items-center gap-3 shadow-lg z-30">
+          <button 
+            type="button" 
+            className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold transition-colors cursor-pointer" 
+            onClick={() => navigate(-1)}
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0059bb] hover:bg-[#004899] active:bg-[#003c82] disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer" 
+            disabled={materials.length === 0}
+          >
             <CheckCircle size={18} /> {isEditing ? 'Update Statement' : 'Generate Statement'}
           </button>
         </div>
@@ -538,50 +550,58 @@ export default function CreateStatement() {
 
       {/* Edit MR Info Modal */}
       {editingMrInfo && (
-        <div className="modal-overlay">
-          <div className="modal-card glass-card" style={{ maxWidth: '400px' }}>
-            <div className="modal-header">
-              <h3 className="modal-title">Edit MR Details</h3>
-              <button type="button" className="modal-close" onClick={closeEditMrInfoModal}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-sm w-full overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+              <h3 className="text-base font-bold text-slate-900">Edit MR Details</h3>
+              <button type="button" className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer" onClick={closeEditMrInfoModal}>
                 <X size={20} />
               </button>
             </div>
             
-            <div className="modal-body">
-              <div className="form-group">
-                <label>MR/Lot No.</label>
+            <div className="p-6 space-y-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">MR/Lot No.</label>
                 <input 
                   type="text" 
                   value={editingMrInfo.newMr} 
                   onChange={(e) => setEditingMrInfo({...editingMrInfo, newMr: e.target.value})}
-                  className="form-control"
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]"
                 />
               </div>
-              <div className="form-group">
-                <label>PO No.</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">PO No.</label>
                 <input 
                   type="text" 
                   value={editingMrInfo.newPo} 
                   onChange={(e) => setEditingMrInfo({...editingMrInfo, newPo: e.target.value})}
-                  className="form-control"
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]"
                 />
               </div>
-              <div className="form-group">
-                <label>Rel No.</label>
+              <div className="flex flex-col gap-1.5">
+                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Rel No.</label>
                 <input 
                   type="text" 
                   value={editingMrInfo.newRel} 
                   onChange={(e) => setEditingMrInfo({...editingMrInfo, newRel: e.target.value})}
-                  className="form-control"
+                  className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]"
                 />
               </div>
             </div>
 
-            <div className="modal-footer">
-              <button type="button" className="btn-outline" onClick={closeEditMrInfoModal}>
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <button 
+                type="button" 
+                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-semibold transition-colors cursor-pointer" 
+                onClick={closeEditMrInfoModal}
+              >
                 Cancel
               </button>
-              <button type="button" className="btn-primary" onClick={handleSaveMrInfo}>
+              <button 
+                type="button" 
+                className="px-4 py-2 bg-[#0059bb] hover:bg-[#004899] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer" 
+                onClick={handleSaveMrInfo}
+              >
                 Save Details
               </button>
             </div>
@@ -591,25 +611,25 @@ export default function CreateStatement() {
 
       {/* MR Specific Material Selection Modal */}
       {activeMrModal && (
-        <div className="modal-overlay">
-          <div className="modal-card glass-card" style={{ maxWidth: '600px' }}>
-            <div className="modal-header">
-              <h3 className="modal-title">Enter Quantities for MR: {activeMrModal}</h3>
-              <button className="modal-close" onClick={closeMrModal}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+              <h3 className="text-base font-bold text-slate-900">Enter Quantities for MR: {activeMrModal}</h3>
+              <button className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer" onClick={closeMrModal}>
                 <X size={20} />
               </button>
             </div>
             
-            <div className="modal-body" style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-              <table className="data-table">
+            <div className="p-6 overflow-y-auto flex-1">
+              <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr>
-                    <th>Material Description</th>
-                    <th className="text-center">Available Balance</th>
-                    <th className="text-right">Quantity (Nos)</th>
+                  <tr className="bg-slate-50 border-b border-slate-200">
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Material Description</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-center">Available Balance</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Quantity (Nos)</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-slate-100">
                   {materialsList.map((item) => {
                     const initialBalance = getAvailableBalance(item);
                     
@@ -631,26 +651,24 @@ export default function CreateStatement() {
                     const remainingBalance = initialBalance - usedInOtherMRs - currentlyTyping;
 
                     return (
-                      <tr key={item}>
-                        <td className="font-medium">{item}</td>
-                        <td className="text-center">
-                          <span className={`badge ${remainingBalance > 0 ? 'badge-primary' : ''}`} style={{ 
-                            background: remainingBalance > 0 ? '#e6f2ff' : (remainingBalance < 0 ? '#ffe6e6' : '#f8f9fa'),
-                            color: remainingBalance > 0 ? '#0066cc' : (remainingBalance < 0 ? '#cc0000' : '#6c757d'),
-                            padding: '4px 8px',
-                            borderRadius: '12px',
-                            fontSize: '0.85em',
-                            fontWeight: 'bold'
-                          }}>
+                      <tr key={item} className="hover:bg-slate-50/70 transition-colors">
+                        <td className="px-4 py-3 text-sm font-medium text-slate-800">{item}</td>
+                        <td className="px-4 py-3 text-center">
+                          <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold ${
+                            remainingBalance > 0 
+                              ? 'bg-blue-100 text-blue-800' 
+                              : (remainingBalance < 0 
+                                  ? 'bg-rose-100 text-rose-800' 
+                                  : 'bg-slate-100 text-slate-600')
+                          }`}>
                             {remainingBalance}
                           </span>
                         </td>
-                        <td className="text-right">
+                        <td className="px-4 py-3 text-right">
                           <input 
                             type="number" 
                             placeholder="0" 
-                            className="form-control"
-                            style={{ width: '100px', marginLeft: 'auto', textAlign: 'right' }}
+                            className="w-24 px-3 py-1.5 text-right font-mono bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] ml-auto"
                             value={mrModalSelections[item] === undefined ? '' : mrModalSelections[item]}
                             onChange={(e) => handleMrModalQtyChange(item, e.target.value)}
                             min="0"
@@ -663,11 +681,19 @@ export default function CreateStatement() {
               </table>
             </div>
 
-            <div className="modal-footer">
-              <button type="button" className="btn-outline" onClick={closeMrModal}>
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <button 
+                type="button" 
+                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-semibold transition-colors cursor-pointer" 
+                onClick={closeMrModal}
+              >
                 Cancel
               </button>
-              <button type="button" className="btn-primary" onClick={saveMrModalSelections}>
+              <button 
+                type="button" 
+                className="px-4 py-2 bg-[#0059bb] hover:bg-[#004899] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer" 
+                onClick={saveMrModalSelections}
+              >
                 Save MR Data
               </button>
             </div>

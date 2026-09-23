@@ -1,85 +1,34 @@
-import { Outlet, useNavigate } from 'react-router-dom';
-import { X, LayoutTemplate } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState } from 'react';
+import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import { useTabs } from '../../contexts/TabContext';
-import { getRouteConfig } from '../../routeConfig';
-import './Layout.css';
 
 export default function MainLayout() {
-  const { tabs, activeTab, setActiveTab, closeTab, closeAllTabs } = useTabs();
-  const navigate = useNavigate();
-
-  const handleTabClick = (path) => {
-    setActiveTab(path);
-    navigate(path);
-  };
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
-    <div className="layout-container">
-      <Sidebar />
-      <div className="main-wrapper">
-        <Header />
-        
-        {/* IDE-Style Tab Bar */}
-        <div className="ide-tab-bar">
-          <div className="tab-scroll-area">
-            {tabs.map((tab) => (
-              <div
-                key={tab.path}
-                className={`ide-tab ${activeTab === tab.path ? 'active' : ''}`}
-                onClick={() => handleTabClick(tab.path)}
-                title={tab.label}
-              >
-                <span className="tab-label">{tab.label}</span>
-                {tab.path !== '/' && (
-                  <button 
-                    className="tab-close-btn" 
-                    onClick={(e) => closeTab(tab.path, e)}
-                  >
-                    <X size={14} />
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-          
-          {tabs.length > 1 && (
-            <button className="tab-close-all-btn" onClick={closeAllTabs} title="Close All Tabs">
-              <LayoutTemplate size={16} />
-            </button>
-          )}
-        </div>
+    <div className="min-h-screen w-full flex relative overflow-x-hidden bg-slate-50">
+      {/* Mobile Drawer Backdrop */}
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 transition-opacity lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
 
-        <main className="main-content has-tabs">
-          {/* Render all open tabs, but hide inactive ones using CSS */}
-          {tabs.map(tab => {
-            const route = getRouteConfig(tab.path);
-            if (!route) return null;
-            
-            const isActive = activeTab === tab.path;
-            
-            return (
-              <div 
-                key={tab.path} 
-                className="tab-content-wrapper" 
-                style={{ display: isActive ? 'block' : 'none', height: '100%' }}
-              >
-                <motion.div
-                  initial={false}
-                  animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0, y: 15 }}
-                  transition={{ duration: 0.25, ease: 'easeOut' }}
-                  style={{ height: '100%' }}
-                >
-                  {route.component}
-                </motion.div>
-              </div>
-            );
-          })}
-          
-          {/* Fallback for routes not managed by tabs (if any) */}
-          {tabs.length === 0 && <Outlet />}
+      <Sidebar 
+        isOpen={isMobileMenuOpen} 
+        onClose={() => setIsMobileMenuOpen(false)} 
+      />
+
+      <div className="flex-1 flex flex-col w-full min-w-0 transition-[margin] duration-300 lg:ml-[280px]">
+        <Header 
+          onToggleMobileMenu={() => setIsMobileMenuOpen(prev => !prev)} 
+        />
+        
+        <main className="flex-1 min-w-0 bg-slate-50 overflow-y-auto p-4 md:p-6 lg:p-8">
+          <Outlet />
         </main>
       </div>
     </div>

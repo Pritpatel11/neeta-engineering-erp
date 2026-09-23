@@ -9,12 +9,24 @@ const storeReceiptRoutes = require('./storeReceiptRoutes');
 const masterDataRoutes = require('./masterDataRoutes');
 const enquiryRoutes = require('./enquiryRoutes');
 const quotationRoutes = require('./quotationRoutes');
+const privateInvoiceRoutes = require('./privateInvoiceRoutes');
+const privatePaymentRoutes = require('./privatePaymentRoutes');
 const receiptRoutes = require('./receiptRoutes');
+const authRoutes = require('./authRoutes');
+const userRoutes = require('./userRoutes');
+const taskRoutes = require('./taskRoutes');
+const aiRoutes = require('./aiRoutes');
+const dashboardRoutes = require('./dashboardRoutes');
+const gstRoutes = require('./gstRoutes');
+const notificationRoutes = require('./notificationRoutes');
+const vendorRoutes = require('./vendorRoutes');
+const purchaseRoutes = require('./purchaseRoutes');
 const financialYearMiddleware = require('../middlewares/financialYear');
 const backupDatabase = require('../utils/backup');
 const restoreDatabase = require('../utils/restore');
 const fs = require('fs');
 const path = require('path');
+
 
 // Example route
 router.get('/health', (req, res) => {
@@ -95,6 +107,15 @@ router.post('/restore', async (req, res) => {
   }
 });
 
+// Authentication routes (public / token-based)
+router.use('/auth', authRoutes);
+router.use('/users', userRoutes);
+router.use('/tasks', taskRoutes);
+router.use('/ai', aiRoutes);
+router.use('/dashboards', dashboardRoutes);
+router.use('/gst', gstRoutes);
+router.use('/notifications', notificationRoutes);
+
 router.use(financialYearMiddleware);
 
 router.use('/challans', challanRoutes);
@@ -105,6 +126,10 @@ router.use('/store-receipts', storeReceiptRoutes);
 router.use('/master-data', masterDataRoutes);
 router.use('/enquiries', enquiryRoutes);
 router.use('/quotations', quotationRoutes);
+router.use('/private-invoices', privateInvoiceRoutes);
+router.use('/private-payments', privatePaymentRoutes);
 router.use('/receipts', receiptRoutes);
+router.use('/vendors', vendorRoutes);
+router.use('/purchases', purchaseRoutes);
 
 module.exports = router;

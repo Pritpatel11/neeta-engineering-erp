@@ -7,7 +7,6 @@ import {
 import { createChallan, createStatement, getMaterials, getDivisions, getContractors, getInventoryBalances, getSubDivisions } from '../services/api';
 import toast from 'react-hot-toast';
 import { handleFormKeyboardNav } from '../utils/keyboardNav';
-import './CreateChallan.css';
 
 export default function CreateChallan() {
   const [materialsList, setMaterialsList] = useState([]);
@@ -148,27 +147,27 @@ export default function CreateChallan() {
   };
 
   return (
-    <div className="challan-container">
-      <header className="challan-header">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      <header className="flex flex-col gap-1">
         <div>
-          <h1 className="dashboard-title">Create New Delivery Challan</h1>
-          <p className="dashboard-subtitle">Generate a dispatch document for finished materials.</p>
+          <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Create New Delivery Challan</h1>
+          <p className="text-sm text-slate-500 mt-1">Generate a dispatch document for finished materials.</p>
         </div>
       </header>
 
-      <form className="challan-form" onSubmit={handleGenerateChallan} onKeyDown={handleFormKeyboardNav}>
+      <form className="space-y-6 pb-28" onSubmit={handleGenerateChallan} onKeyDown={handleFormKeyboardNav}>
         {/* General Information */}
-        <section className="form-section glass-card">
-          <h2 className="section-title">
-            <Info className="text-primary" size={20} />
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
+            <Info className="text-[#0059bb]" size={20} />
             General Information
           </h2>
-          <div className="form-grid-3">
-            <div className="form-group">
-              <label>Division</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Division</label>
               <select 
                 name="divisionName" 
-                className="form-control" 
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all cursor-pointer" 
                 value={selectedDivision} 
                 onChange={(e) => setSelectedDivision(e.target.value)} 
                 required
@@ -177,13 +176,13 @@ export default function CreateChallan() {
                 {divisionsList.map(d => <option key={d} value={d}>{d}</option>)}
               </select>
             </div>
-            <div className="form-group">
-              <label>Contractor Name</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Contractor Name</label>
               <input 
                 type="text" 
                 name="contractorName" 
                 placeholder="Enter Contractor Name" 
-                className="form-control" 
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
                 list="challan-contractors-list"
                 required 
               />
@@ -191,35 +190,35 @@ export default function CreateChallan() {
                 {contractorsList.map(c => <option key={c} value={c} />)}
               </datalist>
             </div>
-            <div className="form-group">
-              <label>Gate Pass No.</label>
-              <input type="text" name="gatePassNo" placeholder="Enter gate pass number" className="form-control" required />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Gate Pass No.</label>
+              <input type="text" name="gatePassNo" placeholder="Enter gate pass number" className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" required />
             </div>
-            <div className="form-group">
-              <label>Gate Pass Date</label>
-              <input type="text" name="gatePassDate" placeholder="dd/mm/yyyy" className="form-control" required />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Gate Pass Date</label>
+              <input type="text" name="gatePassDate" placeholder="dd/mm/yyyy" className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" required />
             </div>
-            <div className="form-group">
-              <label>Challan No.</label>
-              <input type="number" name="challanNo" defaultValue={getNextChallanNo()} className="form-control" required />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Challan No.</label>
+              <input type="number" name="challanNo" defaultValue={getNextChallanNo()} className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" required />
             </div>
-            <div className="form-group">
-              <label>Date</label>
-              <input type="text" name="date" placeholder="dd/mm/yyyy" className="form-control" required />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Date</label>
+              <input type="text" name="date" placeholder="dd/mm/yyyy" className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" required />
             </div>
           </div>
         </section>
 
         {/* Administrative Details */}
-        <section className="form-section glass-card">
-          <h2 className="section-title">
-            <Building className="text-primary" size={20} />
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
+            <Building className="text-[#0059bb]" size={20} />
             Administrative Details
           </h2>
-          <div className="form-grid-2">
-            <div className="form-group">
-              <label>Sub-Division Name</label>
-              <input type="text" name="subDivisionName" placeholder="Enter Sub-Division" className="form-control" list="subdivisions-list" required />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Sub-Division Name</label>
+              <input type="text" name="subDivisionName" placeholder="Enter Sub-Division" className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" list="subdivisions-list" required />
               <datalist id="subdivisions-list">
                 {subDivisionsList.map(s => <option key={s} value={s} />)}
               </datalist>
@@ -228,82 +227,86 @@ export default function CreateChallan() {
         </section>
 
         {/* Transport Details */}
-        <section className="form-section glass-card">
-          <h2 className="section-title">
-            <Truck className="text-primary" size={20} />
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2 pb-3 mb-5 border-b border-slate-100">
+            <Truck className="text-[#0059bb]" size={20} />
             Transport Details
           </h2>
-          <div className="form-grid-2">
-            <div className="form-group">
-              <label>Vehicle Number</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Vehicle Number</label>
               <input 
                 type="text" 
                 name="vehicleNumber" 
                 placeholder="e.g. GJ 01 AB 1234" 
-                className="form-control" 
+                className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" 
                 pattern="^[A-Za-z]{2}[ \-]?[0-9]{1,2}[ \-]?[A-Za-z]{1,2}[ \-]?[0-9]{4}$"
                 title="Format: XX 00 XX 0000 (e.g. GJ 01 AB 1234)"
                 required 
               />
             </div>
-            <div className="form-group">
-              <label>Driver's Name</label>
-              <input type="text" name="driverName" placeholder="Enter driver's name" className="form-control" required />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Driver's Name</label>
+              <input type="text" name="driverName" placeholder="Enter driver's name" className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all" required />
             </div>
           </div>
         </section>
 
         {/* Material Selection */}
-        <section className="form-section glass-card">
-          <div className="section-header-flex">
-            <h2 className="section-title mb-0 border-0">
-              <Package className="text-primary" size={20} />
+        <section className="bg-white border border-slate-200/80 rounded-2xl p-5 sm:p-6 shadow-xs">
+          <div className="flex items-center justify-between pb-3 mb-4 border-b border-slate-100">
+            <h2 className="text-base font-semibold text-slate-900 flex items-center gap-2">
+              <Package className="text-[#0059bb]" size={20} />
               Material Selection
             </h2>
-            <button type="button" className="btn-outline-small" onClick={handleOpenModal}>
+            <button 
+              type="button" 
+              className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-[#0059bb] text-xs font-semibold rounded-xl transition-colors cursor-pointer" 
+              onClick={handleOpenModal}
+            >
               <Plus size={16} /> Add Item
             </button>
           </div>
-          <div className="table-responsive mt-4">
-            <table className="data-table">
+          <div className="overflow-x-auto mt-4 rounded-xl border border-slate-200">
+            <table className="w-full text-left border-collapse min-w-[500px]">
               <thead>
-                <tr>
-                  <th>Material Name</th>
-                  <th>Unit</th>
-                  <th className="text-right">Qty Dispatched</th>
-                  <th></th>
+                <tr className="bg-slate-50 border-b border-slate-200">
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Material Name</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Unit</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider text-right">Qty Dispatched</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider w-16"></th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100">
                 {materials.length === 0 ? (
                   <tr>
-                    <td colSpan="4" className="text-center text-muted" style={{ padding: '32px' }}>
+                    <td colSpan="4" className="text-center text-slate-400 py-8 text-sm">
                       No items added yet. Click "Add Item" to select materials.
                     </td>
                   </tr>
                 ) : (
                   materials.map((item) => (
-                    <tr key={item.id} className="group">
-                      <td className="font-medium">{item.name}</td>
-                      <td className="text-muted">{item.unit}</td>
-                      <td className="text-right">
+                    <tr key={item.id} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="px-4 py-3 text-sm font-medium text-slate-800">{item.name}</td>
+                      <td className="px-4 py-3 text-sm text-slate-500">{item.unit}</td>
+                      <td className="px-4 py-3 text-right">
                         <input 
                           type="number" 
                           value={item.qty} 
                           onChange={(e) => handleQtyChange(item.id, e.target.value)}
-                          className="form-control-minimal text-right font-mono" 
+                          className="w-28 px-3 py-1.5 text-right font-mono bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]" 
                           min="1"
                         />
                         {item.qty > getAvailableBalance(item.name) && (
-                          <div className="text-error" style={{ fontSize: '11px', marginTop: '4px', fontWeight: '500' }}>
+                          <div className="text-rose-600 text-[11px] font-medium mt-1">
                             Warning: Stock {getAvailableBalance(item.name)}
                           </div>
                         )}
                       </td>
-                      <td className="text-right">
+                      <td className="px-4 py-3 text-right">
                         <button 
                           type="button" 
-                          className="action-icon text-error"
+                          className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
                           onClick={() => handleDeleteItem(item.id)}
                         >
                           <Trash2 size={18} />
@@ -318,9 +321,19 @@ export default function CreateChallan() {
         </section>
 
         {/* Footer Actions */}
-        <div className="form-actions-footer">
-          <button type="button" className="btn-outline" onClick={() => navigate(-1)}>Cancel</button>
-          <button type="submit" className="btn-primary" disabled={materials.length === 0}>
+        <div className="fixed bottom-0 left-0 right-0 lg:left-[280px] bg-white/95 backdrop-blur-md border-t border-slate-200 px-6 py-4 flex justify-end items-center gap-3 shadow-lg z-30">
+          <button 
+            type="button" 
+            className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold transition-colors cursor-pointer" 
+            onClick={() => navigate(-1)}
+          >
+            Cancel
+          </button>
+          <button 
+            type="submit" 
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-[#0059bb] hover:bg-[#004899] active:bg-[#003c82] disabled:opacity-50 text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer" 
+            disabled={materials.length === 0}
+          >
             <CheckCircle size={18} /> Generate Challan
           </button>
         </div>
@@ -328,24 +341,24 @@ export default function CreateChallan() {
 
       {/* Material Selection Modal */}
       {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-card glass-card">
-            <div className="modal-header">
-              <h3 className="modal-title">Select Materials</h3>
-              <button className="modal-close" onClick={handleCloseModal}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-lg w-full max-h-[85vh] flex flex-col overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+              <h3 className="text-base font-bold text-slate-900">Select Materials</h3>
+              <button className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer" onClick={handleCloseModal}>
                 <X size={20} />
               </button>
             </div>
             
-            <div className="modal-body">
-              <div className="modal-list">
+            <div className="p-6 overflow-y-auto flex-1">
+              <div className="flex flex-col gap-2">
                 {materialsList.map((item) => (
-                  <div key={item} className="modal-list-item">
-                    <span className="modal-item-name">{item}</span>
+                  <div key={item} className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200/80 rounded-xl hover:border-blue-500/50 transition-colors">
+                    <span className="text-sm font-semibold text-slate-800">{item}</span>
                     <input 
                       type="number" 
                       placeholder="Qty" 
-                      className="form-control modal-qty-input"
+                      className="w-24 px-3 py-1.5 text-right font-mono bg-white border border-slate-200 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb]"
                       value={modalSelections[item] === undefined ? '' : modalSelections[item]}
                       onChange={(e) => handleModalQtyChange(item, e.target.value)}
                       min="0"
@@ -355,11 +368,19 @@ export default function CreateChallan() {
               </div>
             </div>
 
-            <div className="modal-footer">
-              <button type="button" className="btn-outline" onClick={handleCloseModal}>
+            <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+              <button 
+                type="button" 
+                className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-100 text-sm font-semibold transition-colors cursor-pointer" 
+                onClick={handleCloseModal}
+              >
                 Cancel
               </button>
-              <button type="button" className="btn-primary" onClick={handleAddSelected}>
+              <button 
+                type="button" 
+                className="px-4 py-2 bg-[#0059bb] hover:bg-[#004899] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer" 
+                onClick={handleAddSelected}
+              >
                 Add Selected
               </button>
             </div>
@@ -369,31 +390,30 @@ export default function CreateChallan() {
 
       {/* Status Selection Modal */}
       {isStatusModalOpen && (
-        <div className="modal-overlay">
-          <div className="modal-card glass-card" style={{ maxWidth: '400px' }}>
-            <div className="modal-header">
-              <h3 className="modal-title">Select Challan Status</h3>
-              <button type="button" className="modal-close" onClick={() => setIsStatusModalOpen(false)}>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-sm w-full overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+              <h3 className="text-base font-bold text-slate-900">Select Challan Status</h3>
+              <button type="button" className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer" onClick={() => setIsStatusModalOpen(false)}>
                 <X size={20} />
               </button>
             </div>
             
-            <div className="modal-body text-center">
-              <p style={{ marginBottom: '24px', color: 'var(--color-on-surface-variant)' }}>
+            <div className="p-6 text-center space-y-5">
+              <p className="text-sm text-slate-600">
                 Is this material already dispatched or currently pending dispatch?
               </p>
-              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+              <div className="flex gap-3 justify-center">
                 <button 
                   type="button" 
-                  className="btn-outline" 
-                  style={{ borderColor: 'var(--color-tertiary)', color: 'var(--color-tertiary)' }}
+                  className="px-4 py-2 rounded-xl border border-amber-500/50 text-amber-700 hover:bg-amber-50 text-sm font-semibold transition-colors cursor-pointer"
                   onClick={() => confirmGenerateChallan('Pending')}
                 >
                   Mark as Pending
                 </button>
                 <button 
                   type="button" 
-                  className="btn-primary" 
+                  className="px-4 py-2 bg-[#0059bb] hover:bg-[#004899] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer" 
                   onClick={() => confirmGenerateChallan('Dispatched')}
                 >
                   Mark as Dispatched
@@ -406,27 +426,27 @@ export default function CreateChallan() {
 
       {/* Statement Prompt Modal */}
       {isStatementPromptOpen && recentlyCreatedChallan && (
-        <div className="modal-overlay">
-          <div className="modal-card glass-card" style={{ maxWidth: '400px' }}>
-            <div className="modal-header">
-              <h3 className="modal-title">Store in Statement?</h3>
+        <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-2xl max-w-md w-full overflow-hidden">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+              <h3 className="text-base font-bold text-slate-900">Store in Statement?</h3>
             </div>
             
-            <div className="modal-body text-center">
-              <p style={{ marginBottom: '24px', color: 'var(--color-on-surface-variant)' }}>
+            <div className="p-6 text-center space-y-5">
+              <p className="text-sm text-slate-600">
                 Challan created successfully! Do you also want to store this in the Contractor Statement Register?
               </p>
-              <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+              <div className="flex gap-3 justify-center">
                 <button 
                   type="button" 
-                  className="btn-outline" 
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-sm font-semibold transition-colors cursor-pointer" 
                   onClick={() => navigate('/challan-preview', { state: { challanData: recentlyCreatedChallan } })}
                 >
                   No, Skip
                 </button>
                 <button 
                   type="button" 
-                  className="btn-primary" 
+                  className="px-4 py-2 bg-[#0059bb] hover:bg-[#004899] text-white text-sm font-semibold rounded-xl shadow-xs transition-colors cursor-pointer" 
                   onClick={async () => {
                     try {
                       const formattedMaterials = recentlyCreatedChallan.materials.map(m => ({

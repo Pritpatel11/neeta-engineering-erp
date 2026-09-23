@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Search, FileText, Truck, Package, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useShortcuts } from '../contexts/ShortcutsContext';
-import { useTabs } from '../contexts/TabContext';
 import { routeConfig } from '../routeConfig';
 
 export default function CommandPalette() {
   const { isCommandPaletteOpen, setIsCommandPaletteOpen } = useShortcuts();
-  const { openTab } = useTabs();
+  const navigate = useNavigate();
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef(null);
@@ -40,24 +40,27 @@ export default function CommandPalette() {
   };
 
   const handleSelect = (route) => {
-    openTab(route.path, route.label);
+    navigate(route.path);
     setIsCommandPaletteOpen(false);
   };
 
   if (!isCommandPaletteOpen) return null;
 
   return (
-    <div className="modal-overlay glass-overlay" onClick={() => setIsCommandPaletteOpen(false)}>
+    <div 
+      className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-slate-900/40 backdrop-blur-xs" 
+      onClick={() => setIsCommandPaletteOpen(false)}
+    >
       <div 
-        className="command-palette-container" 
+        className="w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col" 
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="command-palette-header">
-          <Search size={20} className="command-search-icon" />
+        <div className="p-3.5 border-b border-slate-200 flex items-center gap-3 bg-white">
+          <Search size={20} className="text-slate-400 shrink-0 ml-1" />
           <input
             ref={inputRef}
             type="text"
-            className="command-search-input"
+            className="flex-1 text-sm bg-transparent outline-none text-slate-900 placeholder:text-slate-400 font-medium"
             placeholder="Search pages, actions (e.g. Invoice, Challan)..."
             value={query}
             onChange={(e) => {
@@ -66,35 +69,44 @@ export default function CommandPalette() {
             }}
             onKeyDown={handleKeyDown}
           />
-          <button className="command-close-btn" onClick={() => setIsCommandPaletteOpen(false)}>
+          <button 
+            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer" 
+            onClick={() => setIsCommandPaletteOpen(false)}
+          >
             <X size={18} />
           </button>
         </div>
         
-        <div className="command-palette-results">
+        <div className="max-h-72 overflow-y-auto p-2 divide-y divide-slate-50">
           {filteredRoutes.length > 0 ? (
             filteredRoutes.map((route, index) => (
               <div
                 key={route.path}
-                className={`command-palette-item ${index === selectedIndex ? 'selected' : ''}`}
+                className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-colors cursor-pointer ${
+                  index === selectedIndex 
+                    ? 'bg-blue-50 text-[#0059bb] font-semibold' 
+                    : 'text-slate-700 hover:bg-slate-50'
+                }`}
                 onClick={() => handleSelect(route)}
                 onMouseEnter={() => setSelectedIndex(index)}
               >
-                <div className="command-item-icon">
-                  <FileText size={16} />
+                <div className="flex items-center gap-3">
+                  <div className={`p-1.5 rounded-lg ${index === selectedIndex ? 'bg-[#0059bb] text-white' : 'bg-slate-100 text-slate-600'}`}>
+                    <FileText size={16} />
+                  </div>
+                  <span>{route.label}</span>
                 </div>
-                <div className="command-item-label">{route.label}</div>
-                <div className="command-item-shortcut">Jump to page</div>
+                <span className="text-xs text-slate-400">Jump to page</span>
               </div>
             ))
           ) : (
-            <div className="command-palette-empty">No results found for "{query}"</div>
+            <div className="py-8 text-center text-xs text-slate-400">No results found for "{query}"</div>
           )}
         </div>
-        <div className="command-palette-footer">
-          <span><kbd>↑</kbd> <kbd>↓</kbd> to navigate</span>
-          <span><kbd>Enter</kbd> to select</span>
-          <span><kbd>Esc</kbd> to close</span>
+        <div className="px-4 py-2.5 bg-slate-50 border-t border-slate-100 text-[11px] text-slate-500 flex items-center justify-between">
+          <span><kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-mono text-[10px]">↑</kbd> <kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-mono text-[10px]">↓</kbd> to navigate</span>
+          <span><kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-mono text-[10px]">Enter</kbd> to select</span>
+          <span><kbd className="px-1.5 py-0.5 rounded bg-white border border-slate-200 font-mono text-[10px]">Esc</kbd> to close</span>
         </div>
       </div>
     </div>

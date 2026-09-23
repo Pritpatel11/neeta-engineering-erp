@@ -4,7 +4,6 @@ import { createStoreReceipt, getMaterials, getDivisions, getContractors } from '
 import { Save, ArrowLeft, PackagePlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { handleFormKeyboardNav } from '../utils/keyboardNav';
-import './CreateChallan.css';
 
 export default function CreateCR() {
   const navigate = useNavigate();
@@ -99,41 +98,41 @@ export default function CreateCR() {
   };
 
   return (
-    <div className="page-container" style={{ padding: '24px', maxWidth: '1200px', margin: '0 auto' }}>
-      <div className="page-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+    <div className="page-container p-4 md:p-6 max-w-7xl mx-auto">
+      <div className="page-header flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6">
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: '#111827', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <h1 className="text-xl md:text-2xl font-bold text-slate-800 flex items-center gap-2 m-0">
             <PackagePlus size={24} color="#6f42c1" />
             Material Inward (CR Entry)
           </h1>
-          <p style={{ color: '#6b7280', margin: '4px 0 0 0' }}>Enter received goods to automatically add to Division Inventory Balance.</p>
+          <p className="text-sm text-slate-500 mt-1 mb-0">Enter received goods to automatically add to Division Inventory Balance.</p>
         </div>
         <button
           onClick={() => navigate('/cr-register')}
-          className="btn-outline"
+          className="self-start sm:self-auto inline-flex items-center gap-2 px-3 py-1.5 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs sm:text-sm font-semibold text-slate-700 transition-colors cursor-pointer"
         >
           <ArrowLeft size={16} /> Back to Register
         </button>
       </div>
 
-      <div className="glass-card" style={{ background: '#fff', border: '1px solid #e1e6f1', borderRadius: '8px', padding: '24px' }}>
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-4 md:p-6 shadow-xs">
         <form onSubmit={handleSubmit} onKeyDown={handleFormKeyboardNav}>
           {/* Header Details */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '32px' }}>
-            <div className="form-group">
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>Release No.</label>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+            <div className="flex flex-col gap-1">
+              <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1">Release No.</label>
               <input
                 type="text"
                 name="releaseNo"
                 value={formData.releaseNo}
                 onChange={handleInputChange}
                 placeholder="Enter Release No."
-                style={{ width: '100%', padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all"
               />
             </div>
 
-            <div className="form-group">
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>Receipt No. *</label>
+            <div className="flex flex-col gap-1">
+              <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1">Receipt No. *</label>
               <input
                 type="text"
                 name="receiptNo"
@@ -141,19 +140,19 @@ export default function CreateCR() {
                 onChange={handleInputChange}
                 required
                 placeholder="Enter Receipt No."
-                style={{ width: '100%', padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all"
               />
             </div>
 
-            <div className="form-group">
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>CON. NAME</label>
+            <div className="flex flex-col gap-1">
+              <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1">Contractor Name</label>
               <input
                 type="text"
                 name="conName"
                 value={formData.conName}
                 onChange={handleInputChange}
                 placeholder="Enter Contractor Name"
-                style={{ width: '100%', padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all"
                 list="cr-contractors-list"
               />
               <datalist id="cr-contractors-list">
@@ -161,38 +160,38 @@ export default function CreateCR() {
               </datalist>
             </div>
 
-            <div className="form-group">
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>O.No</label>
+            <div className="flex flex-col gap-1">
+              <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1">Order No.</label>
               <input
                 type="text"
                 name="oNo"
                 value={formData.oNo}
                 onChange={handleInputChange}
                 placeholder="Enter O.No"
-                style={{ width: '100%', padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all"
               />
             </div>
 
-            <div className="form-group">
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>P.O.No.</label>
+            <div className="flex flex-col gap-1">
+              <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1">P.O. No.</label>
               <input
                 type="text"
                 name="poNo"
                 value={formData.poNo}
                 onChange={handleInputChange}
                 placeholder="Enter P.O.No."
-                style={{ width: '100%', padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px' }}
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all"
               />
             </div>
 
-            <div className="form-group">
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#4b5563', marginBottom: '8px' }}>Division Name *</label>
+            <div className="flex flex-col gap-1">
+              <label className="block text-xs font-semibold text-slate-700 tracking-wide mb-1">Division Name *</label>
               <select
                 name="divisionName"
                 value={formData.divisionName}
                 onChange={handleInputChange}
                 required
-                style={{ width: '100%', padding: '10px', border: '1px solid #d1d5db', borderRadius: '6px', background: '#f9fafb' }}
+                className="w-full px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] transition-all cursor-pointer"
               >
                 {divisions.map(div => (
                   <option key={div} value={div}>{div}</option>
@@ -201,36 +200,40 @@ export default function CreateCR() {
             </div>
           </div>
 
-          <hr style={{ borderColor: '#e5e7eb', margin: '0 0 24px 0' }} />
+          <hr className="border-slate-100 my-6" />
 
           {/* Materials Grid */}
-          <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px', color: '#111827' }}>Received Materials</h3>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-            {materials.map((material, idx) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8f9fa', padding: '10px 16px', border: '1px solid #e5e7eb', borderRadius: '6px' }}>
-                <label style={{ fontSize: '13px', fontWeight: 500, color: '#374151', maxWidth: '180px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={material}>
-                  {material.split(' ').slice(1).join(' ')}
-                </label>
-                <input
-                  type="number"
-                  min="0"
-                  value={quantities[material]}
-                  onChange={(e) => handleQtyChange(material, e.target.value)}
-                  placeholder="0"
-                  style={{ width: '80px', padding: '6px 8px', border: '1px solid #d1d5db', borderRadius: '4px', textAlign: 'right' }}
-                />
-              </div>
-            ))}
+          <div className="mb-6">
+            <h3 className="text-base font-bold text-slate-900 mb-1">Received Materials</h3>
+            <p className="text-xs text-slate-500 mb-4">Enter quantities for the received inventory items below.</p>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {materials.map((material, idx) => (
+                <div key={idx} className="flex items-center justify-between gap-3 bg-slate-50 hover:bg-slate-100/80 border border-slate-200/80 rounded-xl p-3 transition-colors">
+                  <label className="text-xs font-semibold text-slate-700 truncate max-w-[180px]" title={material}>
+                    {material.split(' ').slice(1).join(' ')}
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={quantities[material]}
+                    onChange={(e) => handleQtyChange(material, e.target.value)}
+                    placeholder="0"
+                    className="w-20 px-2.5 py-1 text-right font-mono text-xs sm:text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#0059bb]/20 focus:border-[#0059bb] bg-white text-slate-800"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <div className="flex justify-end pt-4 border-t border-slate-100">
             <button
               type="submit"
               disabled={isSubmitting}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6f42c1', color: '#white', padding: '12px 24px', borderRadius: '6px', border: 'none', fontWeight: 'bold', cursor: isSubmitting ? 'not-allowed' : 'pointer', color: 'white' }}
+              className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#0059bb] hover:bg-[#004899] active:bg-[#003c82] text-white rounded-xl font-semibold text-sm shadow-xs transition-all cursor-pointer disabled:opacity-50"
             >
-              <Save size={18} />
-              {isSubmitting ? 'Saving...' : 'Save Material Inward'}
+              <Save size={17} />
+              <span>{isSubmitting ? 'Saving...' : 'Save Material Inward (CR)'}</span>
             </button>
           </div>
         </form>

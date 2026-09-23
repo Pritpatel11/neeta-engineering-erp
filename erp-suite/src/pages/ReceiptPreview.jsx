@@ -69,247 +69,94 @@ export default function ReceiptPreview() {
   const amountInWords = numberToWordsWithDecimal(receipt.amount);
 
   return (
-    <div className="preview-container">
-      <style>
-        {`
-          .preview-container {
-            background-color: #f0f2f5;
-            min-height: 100vh;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            color: #000;
-          }
-          .preview-actions {
-            max-width: 210mm;
-            margin: 0 auto 20px auto;
-            display: flex;
-            justify-content: space-between;
-            background: white;
-            padding: 15px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-          }
-          .document-paper {
-            background: white;
-            max-width: 210mm;
-            min-height: 148mm;
-            margin: 0 auto;
-            padding: 10mm;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            box-sizing: border-box;
-          }
-
-          .receipt-box {
-            border: 2px dashed #000;
-            padding: 25px 35px;
-            min-height: 350px;
-            display: flex;
-            flex-direction: column;
-          }
-
-          .receipt-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 40px;
-          }
-
-          .header-left, .header-right {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-          }
-
-          .header-center {
-            text-align: center;
-          }
-
-          .company-name {
-            font-size: 26px;
-            font-weight: bold;
-            color: #000;
-            margin-bottom: 5px;
-          }
-
-          .company-address {
-            font-size: 13px;
-          }
-
-          .label-text {
-            font-size: 12px;
-            color: #333;
-          }
-
-          .value-text {
-            font-size: 14px;
-            font-weight: 500;
-            color: #000;
-          }
-
-          .uppercase {
-            text-transform: uppercase;
-          }
-
-          .receipt-body {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-            margin-bottom: 30px;
-          }
-
-          .data-row {
-            display: flex;
-            align-items: baseline;
-          }
-
-          .data-row .value-text {
-            flex: 1;
-            padding-left: 20px;
-          }
-
-          .receipt-footer {
-            margin-top: auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-          }
-
-          .amount-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 30px;
-          }
-
-          .rs-text {
-            font-weight: bold;
-            font-size: 18px;
-          }
-
-          .amount-box {
-            border: 2px solid #000;
-            padding: 5px 40px 5px 10px;
-            font-size: 18px;
-            font-weight: 500;
-          }
-
-          .terms-text {
-            font-size: 10px;
-            color: #555;
-            line-height: 1.4;
-          }
-
-          .footer-right {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          }
-
-          .for-text {
-            font-size: 12px;
-            margin-bottom: 5px;
-          }
-
-          .stamp-box {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #000;
-            margin-top: 5px;
-          }
-          
-          @media print {
-            @page { size: A4 portrait !important; margin: 0 !important; }
-            html, body { background: white; margin: 0 !important; padding: 0 !important; height: auto; min-height: 100%; overflow: visible; -webkit-print-color-adjust: exact; }
-            .no-print { display: none !important; }
-            .preview-container { padding: 0; background: white; min-height: 0; display: block; }
-            .document-paper { 
-              box-shadow: none; border: none; padding: 5mm; margin: 0; 
-              width: 100%; height: auto; min-height: 0; box-sizing: border-box; 
-              page-break-after: avoid;
-              page-break-inside: avoid;
-            }
-          }
-        `}
-      </style>
-
-      <div className="preview-actions no-print">
-        <button className="btn-outline" onClick={() => navigate('/receipt-management', { replace: true })}>
-          <ArrowLeft size={16} style={{ marginRight: '6px' }} /> Back
+    <div className="p-4 sm:p-6 bg-slate-100 min-h-screen print:bg-white print:p-0 print:min-h-0 font-sans text-xs text-black flex flex-col items-center">
+      <div className="print:hidden w-full max-w-[210mm] flex items-center justify-between gap-4 mb-6 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-xs">
+        <button 
+          className="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 rounded-xl font-semibold text-xs sm:text-sm transition-colors cursor-pointer" 
+          onClick={() => navigate('/receipt-management', { replace: true })}
+        >
+          <ArrowLeft size={16} /> Back
         </button>
-        <button className="btn-primary" onClick={handlePrint}>
-          <Printer size={18} style={{ marginRight: '6px' }} /> Print / Save PDF
+        <button 
+          className="inline-flex items-center gap-2 px-4 py-2 bg-[#0059bb] hover:bg-[#004c9e] text-white rounded-xl font-semibold text-xs sm:text-sm shadow-sm transition-all cursor-pointer" 
+          onClick={handlePrint}
+        >
+          <Printer size={18} /> Print / Save PDF
         </button>
       </div>
 
-      <div className="document-paper">
-        <div className="receipt-box">
-          
-          {/* Header */}
-          <div className="receipt-header">
-            <div className="header-left">
-              <div className="label-text">RECEIPT NO.</div>
-              <div className="value-text">{receipt.receiptNo}</div>
-            </div>
-            <div className="header-center">
-              <div className="company-name">Neeta Engineering Works</div>
-              <div className="company-address">179, G.I.D.C., CHANDISAR (B.K.)</div>
-            </div>
-            <div className="header-right">
-              <div className="label-text">DATE</div>
-              <div className="value-text">{formatDate(receipt.date)}</div>
-            </div>
-          </div>
-
-          {/* Body */}
-          <div className="receipt-body">
-            <div className="data-row">
-              <span className="label-text">Received With thanks from M/s.</span>
-              <span className="value-text">{receipt.partyName}</span>
-            </div>
+      <div className="w-full overflow-x-auto flex justify-center py-2 print:p-0 print:overflow-visible">
+        <div className="bg-white w-full max-w-[210mm] p-6 shadow-md border border-slate-300 text-black box-border print:shadow-none print:border-none print:p-0 print:m-0 print:max-w-none print:w-full">
+          <div className="border-2 border-dashed border-black p-6 sm:p-8 min-h-[350px] flex flex-col">
             
-            <div className="data-row">
-              <span className="label-text">Rupees in word</span>
-              <span className="value-text uppercase">{amountInWords}</span>
-            </div>
-
-            <div className="data-row">
-              <span className="label-text">By Cash/Cheque No.</span>
-              <span className="value-text">{receipt.chequeNo}</span>
-            </div>
-
-            <div className="data-row" style={{ display: 'flex', gap: '30px' }}>
-              <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                <span className="label-text">Payment of our Bill No.</span>
-                <span className="value-text" style={{ paddingLeft: '15px' }}>{receipt.billNo}</span>
+            {/* Header */}
+            <div className="flex justify-between items-start gap-4 mb-8">
+              <div className="flex flex-col gap-1">
+                <div className="text-xs text-slate-600 font-medium">RECEIPT NO.</div>
+                <div className="text-sm font-bold font-mono text-black">{receipt.receiptNo}</div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                <span className="label-text">BILL DAET:</span>
-                <span className="value-text" style={{ paddingLeft: '15px' }}>{formatDate(receipt.billDate)}</span>
+              <div className="text-center flex-1">
+                <div className="text-xl sm:text-2xl font-extrabold uppercase tracking-wide text-black mb-1">Neeta Engineering Works</div>
+                <div className="text-xs text-slate-700">179, G.I.D.C., CHANDISAR (B.K.)</div>
+              </div>
+              <div className="flex flex-col gap-1 text-right">
+                <div className="text-xs text-slate-600 font-medium">DATE</div>
+                <div className="text-sm font-semibold text-black">{formatDate(receipt.date)}</div>
               </div>
             </div>
-          </div>
 
-          {/* Footer */}
-          <div className="receipt-footer">
-            <div className="footer-left">
-              <div className="amount-container">
-                <span className="rs-text">Rs.</span>
-                <div className="amount-box">
-                  {receipt.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+            {/* Body */}
+            <div className="flex flex-col gap-4 mb-8 text-sm">
+              <div className="flex items-baseline border-b border-dotted border-slate-400 pb-1">
+                <span className="text-xs font-semibold text-slate-700 whitespace-nowrap">Received With thanks from M/s.</span>
+                <span className="flex-1 font-bold text-black pl-4">{receipt.partyName}</span>
+              </div>
+              
+              <div className="flex items-baseline border-b border-dotted border-slate-400 pb-1">
+                <span className="text-xs font-semibold text-slate-700 whitespace-nowrap">Rupees in word</span>
+                <span className="flex-1 font-semibold uppercase text-black pl-4 text-xs sm:text-sm">{amountInWords}</span>
+              </div>
+
+              <div className="flex items-baseline border-b border-dotted border-slate-400 pb-1">
+                <span className="text-xs font-semibold text-slate-700 whitespace-nowrap">By Cash/Cheque No.</span>
+                <span className="flex-1 font-mono font-medium text-black pl-4">{receipt.chequeNo || 'N/A'}</span>
+              </div>
+
+              <div className="flex flex-wrap items-baseline gap-6 border-b border-dotted border-slate-400 pb-1">
+                <div className="flex items-baseline">
+                  <span className="text-xs font-semibold text-slate-700 whitespace-nowrap">Payment of our Bill No.</span>
+                  <span className="font-mono font-medium text-black pl-3">{receipt.billNo || 'N/A'}</span>
+                </div>
+                <div className="flex items-baseline">
+                  <span className="text-xs font-semibold text-slate-700 whitespace-nowrap">BILL DATE:</span>
+                  <span className="font-medium text-black pl-3">{formatDate(receipt.billDate)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="mt-auto flex justify-between items-end gap-4">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-lg font-bold text-black">Rs.</span>
+                  <div className="border-2 border-black px-4 py-1.5 text-lg font-bold font-mono min-w-[140px] text-right">
+                    {receipt.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </div>
+                </div>
+                
+                <div className="text-[10px] text-slate-600 leading-snug">
+                  (Payment by Cheque is Subject to realisation) No receipt is<br/>
+                  Valid except on this form.
                 </div>
               </div>
               
-              <div className="terms-text">
-                (Payment by Cheque is Subject to realisation) No receipt is<br/>
-                Valid except on this form.
+              <div className="flex flex-col items-center">
+                <div className="text-xs font-semibold text-black mb-1">For, Neeta Engineering Works.</div>
+                <div className="w-14 h-14 border-2 border-black mt-1"></div>
               </div>
             </div>
-            
-            <div className="footer-right">
-              <div className="for-text">For, Neeta Engineering Works.</div>
-              <div className="stamp-box"></div>
-            </div>
-          </div>
 
+          </div>
         </div>
       </div>
     </div>
